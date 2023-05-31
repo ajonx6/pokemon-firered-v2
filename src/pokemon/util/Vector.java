@@ -15,7 +15,12 @@ public class Vector {
         this.x = x;
         this.y = y;
     }
-
+    
+    public void set(double x, double y) {
+        this.x = x;
+        this.y = y;
+    }
+    
     public static Vector add(Vector v, double x, double y) {
         return new Vector(v.x + x, v.y + y);
     }

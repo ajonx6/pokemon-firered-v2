@@ -1,8 +1,11 @@
 package pokemon;
 
 import pokemon.entity.Entity;
+import pokemon.entity.Player;
 import pokemon.gfx.Screen;
 import pokemon.gfx.sprites.Sprite;
+import pokemon.level.Map;
+import pokemon.level.TileData;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,129 +15,134 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 
 public class Game extends Canvas implements Runnable {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public static final int WIDTH = (int) (240 * Settings.SCALE);
-	public static final int HEIGHT = (int) (160 * Settings.SCALE);
-	public static final String TITLE = "2D Game";
-	public static final double FPS = 300.0;
+    public static final int WIDTH = (int) (240 * Settings.SCALE);
+    public static final int HEIGHT = (int) (160 * Settings.SCALE);
+    public static final String TITLE = "2D Game";
+    public static final double FPS = 300.0;
 
-	private static Game instance;
+    private static Game instance;
 
-	public BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-	public int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
-	public JFrame frame;
-	public boolean running;
+    public BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+    public int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
+    public JFrame frame;
+    public boolean running;
 
-	public Screen screen;
-	public Entity player;
-	public Sprite grass1;
-	public Sprite grass2;
-	public Sprite grass3;
-	public Sprite grass4;
+    public Screen screen;
+    public Entity player, npc;
+    public Map map;
 
-	private Game() {
-		screen = new Screen(WIDTH, HEIGHT);
-		player = new Entity(Settings.SCALED_TILE_SIZE, Settings.SCALED_TILE_SIZE, new Sprite("entities/player_sprite"));
-		grass1 = new Sprite("tiles/grass1");
-		grass2 = new Sprite("tiles/grass2");
-		grass3 = new Sprite("tiles/grass3");
-		grass4 = new Sprite("tiles/water");
-		
-		addKeyListener(new KeyInput());
-	}
+    private Game() {
+        TileData.init();
+        
+        screen = new Screen(WIDTH, HEIGHT);
+        player = new Player(4, 4, new Sprite("entities/player_sprite"));
+        npc = new Entity(1, 2, new Sprite("entities/npc_sprite"));
+        map = new Map(16, 16);
+        map.addEntity(player);
+        map.addEntity(npc);
 
-	// Returns the instance of this class so other classes can access these variables
-	public static Game getInstance() {
-		if (instance == null) instance = new Game();
-		return instance;
-	}
+        addKeyListener(new KeyInput());
+    }
 
-	// Stops the current thread and therefore ends the program
-	public void stop() {
-		if (!running) return;
-		running = false;
-	}
+    // Returns the instance of this class so other classes can access these variables
+    public static Game getInstance() {
+        if (instance == null) instance = new Game();
+        return instance;
+    }
 
-	// Runs the program
-	public void run() {
-		running = true;
-		requestFocus();
+    // Stops the current thread and therefore ends the program
+    public void stop() {
+        if (!running) return;
+        running = false;
+    }
 
-		int frames = 0, ticks = 0;
-		long frameCounter = 0;
-		double frameTime = 1.0 / FPS;
-		long lastTime = Time.getTime();
-		double unprocessedTime = 0;
+    // Runs the program
+    public void run() {
+        running = true;
+        requestFocus();
 
-		while (running) {
-			boolean render = false;
+        int frames = 0, ticks = 0;
+        long frameCounter = 0;
+        double frameTime = 1.0 / FPS;
+        long lastTime = Time.getTime();
+        double unprocessedTime = 0;
 
-			long startTime = Time.getTime();
-			long passedTime = startTime - lastTime;
-			lastTime = startTime;
+        while (running) {
+            boolean render = false;
 
-			unprocessedTime += passedTime / (double) Time.SECOND;
-			frameCounter += passedTime;
+            long startTime = Time.getTime();
+            long passedTime = startTime - lastTime;
+            lastTime = startTime;
 
-			while (unprocessedTime > frameTime) {
-				render = true;
-				unprocessedTime -= frameTime;
-				Time.setDelta(frameTime);
-				tick();
-				ticks++;
-				if (frameCounter >= Time.SECOND) {
-					frame.setTitle(TITLE + " | FPS: " + frames + ", UPS: " + ticks);
-					frames = 0;
-					ticks = 0;
-					frameCounter = 0;
-				}
-			}
-			if (render) {
-				render();
-				frames++;
-			} else {
-				try {
-					Thread.sleep(1);
-				} catch (InterruptedException ie) {
-					ie.printStackTrace();
-				}
-			}
-		}
-	}
+            unprocessedTime += passedTime / (double) Time.SECOND;
+            frameCounter += passedTime;
 
-	public void tick() {
-		double delta = Time.getFrameTimeInSeconds();
-		
-		if (KeyInput.wasPressed(KeyEvent.VK_ESCAPE)) System.exit(0);
-		if (KeyInput.wasPressed(KeyEvent.VK_UP)) player.move(0, -Settings.SCALED_TILE_SIZE);
-		if (KeyInput.wasPressed(KeyEvent.VK_DOWN)) player.move(0, Settings.SCALED_TILE_SIZE);
-		if (KeyInput.wasPressed(KeyEvent.VK_LEFT)) player.move(-Settings.SCALED_TILE_SIZE, 0);
-		if (KeyInput.wasPressed(KeyEvent.VK_RIGHT)) player.move(Settings.SCALED_TILE_SIZE, 0);
-		
-		KeyInput.tick(delta);
-	}
+            while (unprocessedTime > frameTime) {
+                render = true;
+                unprocessedTime -= frameTime;
+                Time.setDelta(frameTime);
+                tick();
+                ticks++;
+                if (frameCounter >= Time.SECOND) {
+                    frame.setTitle(TITLE + " | FPS: " + frames + ", UPS: " + ticks);
+                    frames = 0;
+                    ticks = 0;
+                    frameCounter = 0;
+                }
+            }
+            if (render) {
+                render();
+                frames++;
+            } else {
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException ie) {
+                    ie.printStackTrace();
+                }
+            }
+        }
+    }
 
-	public void render() {
-		BufferStrategy bs = getBufferStrategy();
-		if (bs == null) {
-			createBufferStrategy(2);
-			return;
-		}
-		Graphics g = bs.getDrawGraphics();
-		screen.clear(0xffaaaaaa);
+    public void tick() {
+        double delta = Time.getFrameTimeInSeconds();
 
-		screen.render(0, 0, grass1);
-		screen.render(Settings.SCALED_TILE_SIZE, 0, grass2);
-		screen.render(0, Settings.SCALED_TILE_SIZE, grass3);
-		screen.render(Settings.SCALED_TILE_SIZE, Settings.SCALED_TILE_SIZE, grass4);
-		player.render(screen);
-		
-		for (int i = 0; i < pixels.length; i++) {
-			pixels[i] = screen.pixels[i];
-		}
-		g.drawImage(image, 0, 0, WIDTH, HEIGHT, null);
-		g.dispose();
-		bs.show();
-	}
+        if (KeyInput.wasPressed(KeyEvent.VK_ESCAPE)) System.exit(0);
+        if (KeyInput.isDown(KeyEvent.VK_UP)) player.move(0, -1);
+        if (KeyInput.isDown(KeyEvent.VK_DOWN)) player.move(0, 1);
+        if (KeyInput.isDown(KeyEvent.VK_LEFT)) player.move(-1, 0);
+        if (KeyInput.isDown(KeyEvent.VK_RIGHT)) player.move(1, 0);
+        
+        if (KeyInput.isDown(KeyEvent.VK_W)) npc.move(0, -1);
+        if (KeyInput.isDown(KeyEvent.VK_S)) npc.move(0, 1);
+        if (KeyInput.isDown(KeyEvent.VK_A)) npc.move(-1, 0);
+        if (KeyInput.isDown(KeyEvent.VK_D)) npc.move(1, 0);
+
+        player.tick(delta);
+        npc.tick(delta);
+        
+        KeyInput.tick(delta);
+    }
+
+    public void render() {
+        BufferStrategy bs = getBufferStrategy();
+        if (bs == null) {
+            createBufferStrategy(2);
+            return;
+        }
+        Graphics g = bs.getDrawGraphics();
+        screen.clear(0xffaaaaaa);
+
+        map.render(screen);
+        player.render(screen);
+        npc.render(screen);
+
+        for (int i = 0; i < pixels.length; i++) {
+            pixels[i] = screen.pixels[i];
+        }
+        g.drawImage(image, 0, 0, WIDTH, HEIGHT, null);
+        g.dispose();
+        bs.show();
+    }
 }
