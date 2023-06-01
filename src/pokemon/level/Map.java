@@ -16,6 +16,7 @@ public class Map {
     
     public int width, height;
     public int[] tiles;
+    public Tile[] specialTiles;
     
     public List<Entity> entities = new ArrayList<>();
 
@@ -23,12 +24,17 @@ public class Map {
         this.width = width;
         this.height = height;
         this.tiles = new int[width * height];
+        this.specialTiles = new Tile[width * height];
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                tiles[x + y * width] = RANDOM.nextInt(TileData.TILES.size());
+                tiles[x + y * width] = 1; RANDOM.nextInt(TileData.TILES.size());
             }
         }
+    }
+    
+    public Tile tileUnder(Entity e) {
+        return specialTiles[e.getTilePos().intX() + e.getTilePos().intY() * width];
     }
     
     public void render(Screen screen) {

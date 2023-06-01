@@ -5,9 +5,10 @@ import pokemon.Settings;
 import pokemon.gfx.Screen;
 import pokemon.gfx.sprites.Sprite;
 import pokemon.level.Map;
+import pokemon.level.Tile;
 import pokemon.util.Vector;
 
-public class Player extends Entity {
+public class Player extends Character {
     public Player(double wx, double wy, Sprite sprite) {
         super(wx, wy, sprite);
         Map.offsetX = Game.WIDTH / 2 - (worldPos.getX() + sprite.width / 2);
@@ -32,6 +33,10 @@ public class Player extends Entity {
             Map.offsetY = Math.round(Map.offsetY);
             this.worldPos = Vector.mul(tilePos, Settings.SCALED_TILE_SIZE);
         }
+    }
+    
+    public void tick(double delta) {
+        super.tick(delta);
     }
 
     public void render(Screen screen) {

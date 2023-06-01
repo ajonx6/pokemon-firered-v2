@@ -1,11 +1,14 @@
 package pokemon;
 
+import pokemon.entity.Character;
 import pokemon.entity.Entity;
+import pokemon.entity.MapObject;
 import pokemon.entity.Player;
 import pokemon.gfx.Screen;
 import pokemon.gfx.sprites.Sprite;
 import pokemon.level.Map;
 import pokemon.level.TileData;
+import pokemon.level.warp.WarpManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,19 +33,30 @@ public class Game extends Canvas implements Runnable {
     public boolean running;
 
     public Screen screen;
-    public Entity player, npc;
+    public Character npc;
+    public Player player;
     public Map map;
+    public MapObject tree, tree2, tree3, tree4;
 
     private Game() {
         TileData.init();
         
         screen = new Screen(WIDTH, HEIGHT);
         player = new Player(4, 4, new Sprite("entities/player_sprite"));
-        npc = new Entity(1, 2, new Sprite("entities/npc_sprite"));
+        npc = new Character(2, 2, new Sprite("entities/npc_sprite"));
+        tree = new MapObject(0, 0, new Sprite("objects/tree"));
+        tree2 = new MapObject(0, 2, new Sprite("objects/tree"));
+        tree3 = new MapObject(0, 4, new Sprite("objects/tree"));
+        tree4 = new MapObject(0, 6, new Sprite("objects/tree"));
         map = new Map(16, 16);
         map.addEntity(player);
         map.addEntity(npc);
+        map.addEntity(tree);
+        map.addEntity(tree2);
+        map.addEntity(tree3);
+        map.addEntity(tree4);
 
+        WarpManager.init(map);
         addKeyListener(new KeyInput());
     }
 
