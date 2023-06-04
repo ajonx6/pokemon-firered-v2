@@ -8,7 +8,7 @@ import pokemon.util.Vector;
 
 import java.util.Set;
 
-public class Entity {
+public abstract class Entity {
     protected Vector worldPos, tilePos, screenPos;
     protected Sprite sprite;
 
@@ -17,15 +17,12 @@ public class Entity {
         this.worldPos = new Vector(tx * Settings.SCALED_TILE_SIZE, ty * Settings.SCALED_TILE_SIZE);
         this.screenPos = Vector.mul(tilePos, Settings.SCALED_TILE_SIZE);
         this.sprite = sprite;
-
-        screenPos = Vector.sub(screenPos, 0, sprite.height - Settings.SCALED_TILE_SIZE);
     }
 
-    public void tick(double delta) {
-    }
+    public abstract void tick(double delta);
 
     public void render(Screen screen) {
-        screen.render(screenPos.getX() + Map.offsetX, screenPos.getY() + Map.offsetY, sprite);
+        // screen.prepareRender(screenPos.getX() + Map.offsetX, screenPos.getY() + Map.offsetY, sprite, 2);
     }
 
     public Vector getTilePos() {

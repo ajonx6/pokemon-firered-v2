@@ -16,7 +16,7 @@ public class Warp extends Tile {
 
     public Warp(int tx, int ty, Map map) {
         super(tx, ty);
-        map.specialTiles[tx + ty * map.width] = this;
+        map.getSpecialTiles()[tx + ty * map.getWidth()] = this;
     }
     
     public void connect(Warp other) {

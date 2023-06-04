@@ -40,6 +40,6 @@ public class Player extends Character {
     }
 
     public void render(Screen screen) {
-        screen.render(screenPos.getX(), screenPos.getY(), sprite);
+        screen.prepareRender(screenPos.getX(), screenPos.getY(), sprite, Screen.NPCS);
     }
 }

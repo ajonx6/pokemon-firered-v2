@@ -9,23 +9,27 @@ import pokemon.gfx.SpriteList;
 import pokemon.level.warp.Warp;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
 public class Map {
     public static final Random RANDOM = new Random();
+    public static final HashMap<String, Map> MAPS_MAP = new HashMap<>();
     
     public static double offsetX, offsetY;
     
-    public int id;
-    public int width, height;
-    public String[] tiles;
-    public Tile[] specialTiles;
-    
-    public List<Entity> entities = new ArrayList<>();
-    public List<MapObject> objects = new ArrayList<>();
+    private String name;
+    private int id;
+    private int width, height;
+    private String[] tiles;
+    private Tile[] specialTiles;
 
-    public Map(int id, int width, int height) {
+    private List<Entity> entities = new ArrayList<>();
+    private List<MapObject> objects = new ArrayList<>();
+
+    public Map(String name, int id, int width, int height) {
+        this.name = name;
         this.id = id;
         this.width = width;
         this.height = height;
@@ -38,16 +42,20 @@ public class Map {
                 // RANDOM.nextInt(TileData.TILES_BY_ID.size());
             }
         }
+
+        MAPS_MAP.put(name, this);
     }
 
-    public Map(int id, int width, int height, String[] tiles) {
+    public Map(String name, int id, int width, int height, String[] tiles) {
+        this.name = name;
         this.id = id;
         this.width = width;
         this.height = height;
         this.tiles = new String[width * height];
         this.specialTiles = new Tile[width * height];
-
         System.arraycopy(tiles, 0, this.tiles, 0, tiles.length);
+        
+        MAPS_MAP.put(name, this);
     }
     
     public Tile tileUnder(Entity e) {
@@ -58,7 +66,7 @@ public class Map {
     public void render(Screen screen) {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                screen.render(x * Settings.SCALED_TILE_SIZE + offsetX, y * Settings.SCALED_TILE_SIZE + offsetY, SpriteList.TILES.get(tiles[x + y * width]));
+                screen.prepareRender(x * Settings.SCALED_TILE_SIZE + offsetX, y * Settings.SCALED_TILE_SIZE + offsetY, SpriteList.TILES.get(tiles[x + y * width]), Screen.TILE_LAYER);
             }
         }
 
@@ -72,7 +80,7 @@ public class Map {
                 for (int x = 0; x < width; x++) {
                     Tile t = specialTiles[x + y * width];
                     if (t == null) continue;
-                    if (t instanceof Warp) screen.render(x * Settings.SCALED_TILE_SIZE + offsetX, y * Settings.SCALED_TILE_SIZE + offsetY, SpriteList.WARP_SPRITE);
+                    if (t instanceof Warp) screen.prepareRender(x * Settings.SCALED_TILE_SIZE + offsetX, y * Settings.SCALED_TILE_SIZE + offsetY, SpriteList.WARP_SPRITE, Screen.UI_ELEMENTS);
                 }
             }
         }
@@ -89,5 +97,37 @@ public class Map {
     
     public void addObject(MapObject o) {
         objects.add(o);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public String[] getTiles() {
+        return tiles;
+    }
+
+    public Tile[] getSpecialTiles() {
+        return specialTiles;
+    }
+
+    public List<Entity> getEntities() {
+        return entities;
+    }
+
+    public List<MapObject> getObjects() {
+        return objects;
     }
 }

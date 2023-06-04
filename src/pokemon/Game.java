@@ -1,12 +1,11 @@
 package pokemon;
 
 import pokemon.entity.Character;
-import pokemon.entity.MapObject;
 import pokemon.entity.Player;
 import pokemon.gfx.Screen;
+import pokemon.gfx.SpriteList;
 import pokemon.gfx.sprites.Sprite;
 import pokemon.level.Map;
-import pokemon.gfx.SpriteList;
 import pokemon.level.warp.WarpManager;
 
 import javax.swing.*;
@@ -15,9 +14,10 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.io.Serial;
 
 public class Game extends Canvas implements Runnable {
-    private static final long serialVersionUID = 1L;
+    @Serial private static final long serialVersionUID = 1L;
 
     public static final int WIDTH = (int) (240 * Settings.SCALE);
     public static final int HEIGHT = (int) (160 * Settings.SCALE);
@@ -39,13 +39,16 @@ public class Game extends Canvas implements Runnable {
 
     private Game() {
         SpriteList.init();
+        Loader.loadObjects();
+        Loader.loadMaps();
         
         screen = new Screen(WIDTH, HEIGHT);
         player = new Player(4, 4, new Sprite("entities/player_sprite"));
         npc = new Character(2, 2, new Sprite("entities/npc_sprite"));
         
         // map = new Map(0, 16, 16);
-        map = Loader.loadMap("pallet_town");
+        // map = Loader.loadMap("pallet_town");
+        map = Map.MAPS_MAP.get("pallet_town");
         map.addEntity(player);
         map.addEntity(npc);
 
@@ -146,9 +149,11 @@ public class Game extends Canvas implements Runnable {
         map.render(screen);
         player.render(screen);
         npc.render(screen);
+        
+        screen.renderAll();
 
         for (int i = 0; i < pixels.length; i++) {
-            pixels[i] = screen.pixels[i];
+            pixels[i] = screen.getPixel(i);
         }
         g.drawImage(image, 0, 0, WIDTH, HEIGHT, null);
         g.dispose();

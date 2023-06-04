@@ -2,7 +2,9 @@ package pokemon.entity;
 
 import pokemon.Game;
 import pokemon.Settings;
+import pokemon.gfx.Screen;
 import pokemon.gfx.sprites.Sprite;
+import pokemon.level.Map;
 import pokemon.level.Tile;
 import pokemon.util.Vector;
 
@@ -16,6 +18,8 @@ public class Character extends Entity {
     
     public Character(double tx, double ty, Sprite sprite) {
         super(tx, ty, sprite);
+
+        screenPos = Vector.sub(screenPos, 0, sprite.height - Settings.SCALED_TILE_SIZE);
     }
 
     public void move(double dx, double dy) {
@@ -58,5 +62,9 @@ public class Character extends Entity {
 
     public void setHasMoved(boolean hasMoved) {
         this.hasMoved = hasMoved;
+    }
+    
+    public void render(Screen screen) {
+        screen.prepareRender(screenPos.getX() + Map.offsetX, screenPos.getY() + Map.offsetY, sprite, Screen.NPCS);
     }
 }
