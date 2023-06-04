@@ -1,13 +1,12 @@
 package pokemon;
 
 import pokemon.entity.Character;
-import pokemon.entity.Entity;
 import pokemon.entity.MapObject;
 import pokemon.entity.Player;
 import pokemon.gfx.Screen;
 import pokemon.gfx.sprites.Sprite;
 import pokemon.level.Map;
-import pokemon.level.TileData;
+import pokemon.gfx.SpriteList;
 import pokemon.level.warp.WarpManager;
 
 import javax.swing.*;
@@ -25,36 +24,30 @@ public class Game extends Canvas implements Runnable {
     public static final String TITLE = "2D Game";
     public static final double FPS = 300.0;
 
+    public static boolean debug = false;
     private static Game instance;
-
+    
     public BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
     public int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
     public JFrame frame;
     public boolean running;
-
+    
     public Screen screen;
     public Character npc;
     public Player player;
     public Map map;
-    public MapObject tree, tree2, tree3, tree4;
 
     private Game() {
-        TileData.init();
+        SpriteList.init();
         
         screen = new Screen(WIDTH, HEIGHT);
         player = new Player(4, 4, new Sprite("entities/player_sprite"));
         npc = new Character(2, 2, new Sprite("entities/npc_sprite"));
-        tree = new MapObject(0, 0, new Sprite("objects/tree"));
-        tree2 = new MapObject(0, 2, new Sprite("objects/tree"));
-        tree3 = new MapObject(0, 4, new Sprite("objects/tree"));
-        tree4 = new MapObject(0, 6, new Sprite("objects/tree"));
-        map = new Map(16, 16);
+        
+        // map = new Map(0, 16, 16);
+        map = Loader.loadMap("pallet_town");
         map.addEntity(player);
         map.addEntity(npc);
-        map.addEntity(tree);
-        map.addEntity(tree2);
-        map.addEntity(tree3);
-        map.addEntity(tree4);
 
         WarpManager.init(map);
         addKeyListener(new KeyInput());
@@ -123,6 +116,8 @@ public class Game extends Canvas implements Runnable {
         double delta = Time.getFrameTimeInSeconds();
 
         if (KeyInput.wasPressed(KeyEvent.VK_ESCAPE)) System.exit(0);
+        if (KeyInput.wasPressed(KeyEvent.VK_SPACE)) debug = !debug;
+        
         if (KeyInput.isDown(KeyEvent.VK_UP)) player.move(0, -1);
         if (KeyInput.isDown(KeyEvent.VK_DOWN)) player.move(0, 1);
         if (KeyInput.isDown(KeyEvent.VK_LEFT)) player.move(-1, 0);

@@ -1,7 +1,6 @@
 package pokemon.level;
 
 import pokemon.entity.Character;
-import pokemon.entity.Entity;
 
 public abstract class Tile {
     public int tx, ty;

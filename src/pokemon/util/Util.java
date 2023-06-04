@@ -14,7 +14,7 @@ public class Util {
 
 	public static List<String> load(String name) {
 		List<String> data = new ArrayList<String>();
-		try (BufferedReader br = new BufferedReader(new FileReader(new File("res/" + name)))) {
+		try (BufferedReader br = new BufferedReader(new FileReader("res/" + name))) {
 			String line = "";
 			while ((line = br.readLine()) != null) {
 				data.add(line);
