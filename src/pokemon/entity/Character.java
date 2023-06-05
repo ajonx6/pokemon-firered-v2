@@ -24,7 +24,7 @@ public class Character extends Entity {
     }
 
     public void move(int dx, int dy) {
-        if (MapManager.currentMap.collisionAt(Vector.add(tilePos, dx, dy))) return;
+        if (MapManager.collisionAt(Vector.add(tilePos, dx, dy))) return;
         if (!currentlyMoving) {
             currentlyMoving = true;
             this.dx = dx * Settings.SCALED_TILE_SIZE / TILE_MOVE_TIME;
@@ -52,7 +52,7 @@ public class Character extends Entity {
 
     public void tick(double delta) {
         processMovement(delta);
-        Tile underneath = Game.getInstance().map.tileUnder(this);
+        Tile underneath = MapManager.tileUnder(this);
         if (!currentlyMoving && underneath != null) {
             underneath.action(this);
         }

@@ -36,7 +36,6 @@ public class Game extends Canvas implements Runnable {
     public Screen screen;
     public Character npc;
     public Player player;
-    public Map map;
 
     private Game() {
         SpriteList.init();
@@ -47,15 +46,11 @@ public class Game extends Canvas implements Runnable {
         player = new Player(4, 4, new Sprite("entities/player_sprite"));
         npc = new Character(2, 2, new Sprite("entities/npc_sprite"));
         
-        MapManager.swapMap(Map.MAPS_MAP.get("pallet_town"));
-        
-        // map = new Map(0, 16, 16);
-        // map = Loader.loadMap("pallet_town");
-        map = Map.MAPS_MAP.get("pallet_town");
-        map.addEntity(player);
-        map.addEntity(npc);
+        MapManager.loadMap(Map.MAPS_MAP.get("pallet_town"));
+        MapManager.currentMap.addEntity(player);
+        MapManager.currentMap.addEntity(npc);
 
-        WarpManager.init(map);
+        WarpManager.init(MapManager.currentMap);
         addKeyListener(new KeyInput());
     }
 
@@ -149,7 +144,7 @@ public class Game extends Canvas implements Runnable {
         Graphics g = bs.getDrawGraphics();
         screen.clear(0xffaaaaaa);
 
-        map.render(screen);
+        MapManager.render(screen);
         player.render(screen);
         npc.render(screen);
         
