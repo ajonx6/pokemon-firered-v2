@@ -1,10 +1,8 @@
-package pokemon.level;
+package pokemon.map;
 
 import pokemon.Settings;
-import pokemon.gfx.Screen;
 import pokemon.gfx.sprites.Sprite;
 
-import java.util.Arrays;
 import java.util.HashMap;
 
 public class MapObjectData {

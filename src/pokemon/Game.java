@@ -5,8 +5,9 @@ import pokemon.entity.Player;
 import pokemon.gfx.Screen;
 import pokemon.gfx.SpriteList;
 import pokemon.gfx.sprites.Sprite;
-import pokemon.level.Map;
-import pokemon.level.warp.WarpManager;
+import pokemon.map.Map;
+import pokemon.map.MapManager;
+import pokemon.map.warp.WarpManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -45,6 +46,8 @@ public class Game extends Canvas implements Runnable {
         screen = new Screen(WIDTH, HEIGHT);
         player = new Player(4, 4, new Sprite("entities/player_sprite"));
         npc = new Character(2, 2, new Sprite("entities/npc_sprite"));
+        
+        MapManager.swapMap(Map.MAPS_MAP.get("pallet_town"));
         
         // map = new Map(0, 16, 16);
         // map = Loader.loadMap("pallet_town");

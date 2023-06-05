@@ -1,4 +1,4 @@
-package pokemon.level;
+package pokemon.map;
 
 import pokemon.Game;
 import pokemon.Settings;
@@ -6,7 +6,8 @@ import pokemon.entity.Entity;
 import pokemon.entity.MapObject;
 import pokemon.gfx.Screen;
 import pokemon.gfx.SpriteList;
-import pokemon.level.warp.Warp;
+import pokemon.map.warp.Warp;
+import pokemon.util.Vector;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,14 +17,13 @@ import java.util.Random;
 public class Map {
     public static final Random RANDOM = new Random();
     public static final HashMap<String, Map> MAPS_MAP = new HashMap<>();
-    
-    public static double offsetX, offsetY;
-    
+
     private String name;
     private int id;
     private int width, height;
     private String[] tiles;
     private Tile[] specialTiles;
+    private int[] collisionData;
 
     private List<Entity> entities = new ArrayList<>();
     private List<MapObject> objects = new ArrayList<>();
@@ -35,6 +35,7 @@ public class Map {
         this.height = height;
         this.tiles = new String[width * height];
         this.specialTiles = new Tile[width * height];
+        this.collisionData = new int[width * height];
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
@@ -53,50 +54,65 @@ public class Map {
         this.height = height;
         this.tiles = new String[width * height];
         this.specialTiles = new Tile[width * height];
+        this.collisionData = new int[width * height];
         System.arraycopy(tiles, 0, this.tiles, 0, tiles.length);
-        
+
         MAPS_MAP.put(name, this);
     }
-    
+
     public Tile tileUnder(Entity e) {
-        if (e.getTilePos().intX() >= width || e.getTilePos().intX() < 0 || e.getTilePos().intY() >= height || e.getTilePos().intY() < 0) return null;
+        if (e.getTilePos().intX() >= width || e.getTilePos().intX() < 0 || e.getTilePos().intY() >= height || e.getTilePos().intY() < 0)
+            return null;
         return specialTiles[e.getTilePos().intX() + e.getTilePos().intY() * width];
     }
-    
+
+    public boolean collisionAt(Vector tilePos) {
+        if (tilePos.intX() < 0 || tilePos.intY() < 0 || tilePos.intX() >= width || tilePos.intY() >= height)
+            return true;
+        return collisionData[tilePos.intX() + tilePos.intY() * width] == 1;
+    }
+
     public void render(Screen screen) {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                screen.prepareRender(x * Settings.SCALED_TILE_SIZE + offsetX, y * Settings.SCALED_TILE_SIZE + offsetY, SpriteList.TILES.get(tiles[x + y * width]), Screen.TILE_LAYER);
+                screen.prepareRender(x * Settings.SCALED_TILE_SIZE + MapManager.offsetX, y * Settings.SCALED_TILE_SIZE + MapManager.offsetY, SpriteList.TILES.get(tiles[x + y * width]), Screen.TILE_LAYER);
             }
         }
 
         for (MapObject obj : objects) {
             obj.render(screen);
-            // screen.render(obj.getTilePos().intX() * Settings.SCALED_TILE_SIZE + offsetX,  * Settings.SCALED_TILE_SIZE + offsetY, SpriteList.TILES.get(tiles[x + y * width]));
+            // screen.render(obj.getTilePos().intX() * Settings.SCALED_TILE_SIZE + MapManager.offsetX,  * Settings.SCALED_TILE_SIZE + MapManager.offsetY, SpriteList.TILES.get(tiles[x + y * width]));
         }
-        
+
         if (Game.debug) {
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
                     Tile t = specialTiles[x + y * width];
                     if (t == null) continue;
-                    if (t instanceof Warp) screen.prepareRender(x * Settings.SCALED_TILE_SIZE + offsetX, y * Settings.SCALED_TILE_SIZE + offsetY, SpriteList.WARP_SPRITE, Screen.UI_ELEMENTS);
+                    if (t instanceof Warp)
+                        screen.prepareRender(x * Settings.SCALED_TILE_SIZE + MapManager.offsetX, y * Settings.SCALED_TILE_SIZE + MapManager.offsetY, SpriteList.WARP_SPRITE, Screen.UI_ELEMENTS);
                 }
             }
         }
-        
+
         for (Entity e : entities) {
             if (e == Game.getInstance().player) continue;
             e.render(screen);
         }
     }
-    
+
     public void addEntity(Entity e) {
         entities.add(e);
     }
-    
+
     public void addObject(MapObject o) {
         objects.add(o);
+        for (int y = 0; y < o.getObjectData().getTileHeight(); y++) {
+            for (int x = 0; x < o.getObjectData().getTileWidth(); x++) {
+                if (o.getTilePos().intX() + x < 0 || o.getTilePos().intY() + y < 0 || o.getTilePos().intX() + x >= width || o.getTilePos().intY() + y >= height) continue;
+                if (o.getObjectData().getTileData(x, y) == 1) collisionData[o.getTilePos().intX() + x + (o.getTilePos().intY() + y) * width] = 1;
+            }
+        }
     }
 
     public String getName() {

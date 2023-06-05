@@ -2,8 +2,9 @@ package pokemon.entity;
 
 import pokemon.Settings;
 import pokemon.gfx.Screen;
-import pokemon.level.Map;
-import pokemon.level.MapObjectData;
+import pokemon.map.Map;
+import pokemon.map.MapManager;
+import pokemon.map.MapObjectData;
 
 public class MapObject extends Entity {
     private MapObjectData objectData;
@@ -19,8 +20,12 @@ public class MapObject extends Entity {
     public void render(Screen screen) {
         for (int y = 0; y < objectData.getTileHeight(); y++) {
             for (int x = 0; x < objectData.getTileWidth(); x++) {
-                screen.prepareRender(screenPos.getX() + Map.offsetX + Settings.SCALED_TILE_SIZE * x, screenPos.getY() + Map.offsetY + Settings.SCALED_TILE_SIZE * y, objectData.getSubSprite(x, y), objectData.getTileData(x, y));
+                screen.prepareRender(screenPos.getX() + MapManager.offsetX + Settings.SCALED_TILE_SIZE * x, screenPos.getY() + MapManager.offsetY + Settings.SCALED_TILE_SIZE * y, objectData.getSubSprite(x, y), objectData.getTileData(x, y));
             }
         }
+    }
+
+    public MapObjectData getObjectData() {
+        return objectData;
     }
 }

@@ -4,8 +4,9 @@ import pokemon.Game;
 import pokemon.Settings;
 import pokemon.gfx.Screen;
 import pokemon.gfx.sprites.Sprite;
-import pokemon.level.Map;
-import pokemon.level.Tile;
+import pokemon.map.Map;
+import pokemon.map.MapManager;
+import pokemon.map.Tile;
 import pokemon.util.Vector;
 
 public class Character extends Entity {
@@ -22,7 +23,8 @@ public class Character extends Entity {
         screenPos = Vector.sub(screenPos, 0, sprite.height - Settings.SCALED_TILE_SIZE);
     }
 
-    public void move(double dx, double dy) {
+    public void move(int dx, int dy) {
+        if (MapManager.currentMap.collisionAt(Vector.add(tilePos, dx, dy))) return;
         if (!currentlyMoving) {
             currentlyMoving = true;
             this.dx = dx * Settings.SCALED_TILE_SIZE / TILE_MOVE_TIME;
@@ -65,6 +67,6 @@ public class Character extends Entity {
     }
     
     public void render(Screen screen) {
-        screen.prepareRender(screenPos.getX() + Map.offsetX, screenPos.getY() + Map.offsetY, sprite, Screen.NPCS);
+        screen.prepareRender(screenPos.getX() + MapManager.offsetX, screenPos.getY() + MapManager.offsetY, sprite, Screen.NPCS);
     }
 }

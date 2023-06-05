@@ -3,10 +3,7 @@ package pokemon.entity;
 import pokemon.Settings;
 import pokemon.gfx.Screen;
 import pokemon.gfx.sprites.Sprite;
-import pokemon.level.Map;
 import pokemon.util.Vector;
-
-import java.util.Set;
 
 public abstract class Entity {
     protected Vector worldPos, tilePos, screenPos;

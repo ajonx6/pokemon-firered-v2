@@ -2,9 +2,8 @@ package pokemon;
 
 import pokemon.entity.MapObject;
 import pokemon.gfx.sprites.Sprite;
-import pokemon.level.Map;
-import pokemon.gfx.SpriteList;
-import pokemon.level.MapObjectData;
+import pokemon.map.Map;
+import pokemon.map.MapObjectData;
 import pokemon.util.Util;
 
 import java.util.*;

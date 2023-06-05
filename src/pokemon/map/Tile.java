@@ -1,4 +1,4 @@
-package pokemon.level;
+package pokemon.map;
 
 import pokemon.entity.Character;
 

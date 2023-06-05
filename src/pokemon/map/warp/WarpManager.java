@@ -1,6 +1,6 @@
-package pokemon.level.warp;
+package pokemon.map.warp;
 
-import pokemon.level.Map;
+import pokemon.map.Map;
 
 public class WarpManager {
     // public static HashMap<Warp, Warp> warps = new HashMap<>();
