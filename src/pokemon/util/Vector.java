@@ -1,5 +1,7 @@
 package pokemon.util;
 
+import java.util.Objects;
+
 public class Vector {
     private double x, y;
 
@@ -14,6 +16,11 @@ public class Vector {
     public Vector(double x, double y) {
         this.x = x;
         this.y = y;
+    }
+    
+    public void set(Vector v) {
+        this.x = v.x;
+        this.y = v.y;
     }
     
     public void set(double x, double y) {
@@ -64,7 +71,11 @@ public class Vector {
     public void setY(double y) {
         this.y = y;
     }
-    
+
+    public static boolean equals(Vector v1, Vector v2) {
+        return v1.x == v2.x && v1.y == v2.y;
+    }
+
     public String toString() {
         return "(" + x + ", " + y + ")";
     }

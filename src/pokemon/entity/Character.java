@@ -16,20 +16,22 @@ public class Character extends Entity {
     protected double moveTime = 0;
     protected boolean currentlyMoving = false;
     protected boolean hasMoved = false;
+    protected Vector destinationTile = null;
     
     public Character(double tx, double ty, Sprite sprite) {
         super(tx, ty, sprite);
 
-        screenPos = Vector.sub(screenPos, 0, sprite.height - Settings.SCALED_TILE_SIZE);
+        screenPos = Vector.sub(screenPos, 0, sprite.height - Settings.SCALED_TILE_SIZE - 1 * Settings.SCALE);
     }
 
     public void move(int dx, int dy) {
-        if (MapManager.collisionAt(Vector.add(tilePos, dx, dy))) return;
+        Vector dest = Vector.add(tilePos, dx, dy);
+        if (MapManager.collisionAt(dest)) return;
         if (!currentlyMoving) {
             currentlyMoving = true;
             this.dx = dx * Settings.SCALED_TILE_SIZE / TILE_MOVE_TIME;
             this.dy = dy * Settings.SCALED_TILE_SIZE / TILE_MOVE_TIME;
-            this.tilePos = Vector.add(tilePos, dx, dy);
+            this.destinationTile = dest;
             this.hasMoved = true;
         }
     }
@@ -45,6 +47,8 @@ public class Character extends Entity {
             currentlyMoving = false;
             this.dx = 0;
             this.dy = 0;
+            this.tilePos.set(destinationTile);
+            this.destinationTile = null;
             this.worldPos = Vector.mul(tilePos, Settings.SCALED_TILE_SIZE);
             this.screenPos = Vector.sub(Vector.mul(tilePos, Settings.SCALED_TILE_SIZE), 0, sprite.height - Settings.SCALED_TILE_SIZE);
         }

@@ -69,6 +69,9 @@ public class Map {
     public boolean collisionAt(Vector tilePos) {
         if (tilePos.intX() < 0 || tilePos.intY() < 0 || tilePos.intX() >= width || tilePos.intY() >= height)
             return true;
+        for (Entity e : entities) {
+            if (Vector.equals(e.getTilePos(), tilePos)) return true;
+        }
         return collisionData[tilePos.intX() + tilePos.intY() * width] == 1;
     }
 
