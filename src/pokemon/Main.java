@@ -15,7 +15,7 @@ public class Main {
 		game.frame.setUndecorated(true);
 		game.frame.add(game);
 		game.frame.pack();
-		game.frame.setSize(Game.WIDTH, Game.HEIGHT);
+		game.frame.setSize(Game.WINDOW_WIDTH, Game.WINDOW_HEIGHT);
 		game.frame.setResizable(false);
 		game.frame.setLocationRelativeTo(null);
 		game.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

@@ -1,9 +1,12 @@
 package pokemon.gfx;
 
+import com.sun.source.doctree.SeeTree;
+import pokemon.Game;
+import pokemon.Settings;
 import pokemon.gfx.sprites.Sprite;
+import pokemon.util.Vector;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Screen {
 	public static final int TILE_LAYER = 0;
@@ -23,6 +26,11 @@ public class Screen {
 	// Layer 3 = objects above player
 	// Layer 4 = UI elements
 	public List<List<RenderSprite>> layers = new ArrayList<>();
+	public boolean[] sort = new boolean[] {false, true, true, true, false};
+	
+	public void prepareRender(Vector pos, Sprite sprite, int layer) {
+		prepareRender(pos.getX(), pos.getY(), sprite, layer);
+	}
 	
 	public void prepareRender(double x, double y, Sprite sprite, int layer) {
 		int toAdd = layer - layers.size() + 1;
@@ -53,6 +61,7 @@ public class Screen {
 	
 	public void renderAll() {
 		for (List<RenderSprite> layer : layers) {
+			if (sort[layers.indexOf(layer)]) Collections.sort(layer, Comparator.comparingDouble(RenderSprite::getY));
 			for (RenderSprite sprite : layer) {
 				render(sprite.getX(), sprite.getY(), sprite.getSprite());
 			}
@@ -100,4 +109,12 @@ public class Screen {
 	public int getPixel(int i) {
 		return pixels[i];
 	}
+
+    public void scaleAndSetPixels(int[] pixels) {		
+		for (int y = 0; y < Game.WINDOW_HEIGHT; y++) {
+			for (int x = 0; x < Game.WINDOW_WIDTH; x++) {
+				pixels[x + y * Game.WINDOW_WIDTH] = this.pixels[(x / Settings.SCALE) + (y / Settings.SCALE) * this.width];
+			}
+		}
+    }
 }

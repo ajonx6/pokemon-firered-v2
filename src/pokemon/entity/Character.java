@@ -21,7 +21,7 @@ public class Character extends Entity {
     public Character(double tx, double ty, Sprite sprite) {
         super(tx, ty, sprite);
 
-        screenPos = Vector.sub(screenPos, 0, sprite.height - Settings.SCALED_TILE_SIZE - 1 * Settings.SCALE);
+        screenPos = Vector.sub(screenPos, 0, sprite.height - Settings.TILE_SIZE - 1);
     }
 
     public void move(int dx, int dy) {
@@ -29,8 +29,8 @@ public class Character extends Entity {
         if (MapManager.collisionAt(dest)) return;
         if (!currentlyMoving) {
             currentlyMoving = true;
-            this.dx = dx * Settings.SCALED_TILE_SIZE / TILE_MOVE_TIME;
-            this.dy = dy * Settings.SCALED_TILE_SIZE / TILE_MOVE_TIME;
+            this.dx = dx * Settings.TILE_SIZE / TILE_MOVE_TIME;
+            this.dy = dy * Settings.TILE_SIZE / TILE_MOVE_TIME;
             this.destinationTile = dest;
             this.hasMoved = true;
         }
@@ -40,7 +40,7 @@ public class Character extends Entity {
         if (currentlyMoving) {
             moveTime += delta;
             worldPos = Vector.add(worldPos, dx * delta, dy * delta);
-            screenPos = Vector.sub(worldPos, 0, sprite.height - Settings.SCALED_TILE_SIZE);
+            screenPos = Vector.sub(worldPos, 0, sprite.height - Settings.TILE_SIZE - 1);
         }
         if (moveTime > TILE_MOVE_TIME) {
             moveTime = 0;
@@ -49,8 +49,8 @@ public class Character extends Entity {
             this.dy = 0;
             this.tilePos.set(destinationTile);
             this.destinationTile = null;
-            this.worldPos = Vector.mul(tilePos, Settings.SCALED_TILE_SIZE);
-            this.screenPos = Vector.sub(Vector.mul(tilePos, Settings.SCALED_TILE_SIZE), 0, sprite.height - Settings.SCALED_TILE_SIZE);
+            this.worldPos = Vector.mul(tilePos, Settings.TILE_SIZE);
+            this.screenPos = Vector.sub(Vector.mul(tilePos, Settings.TILE_SIZE), 0, sprite.height - Settings.TILE_SIZE - 1);
         }
     }
 

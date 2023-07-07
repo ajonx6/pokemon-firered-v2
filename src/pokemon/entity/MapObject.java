@@ -6,6 +6,9 @@ import pokemon.map.Map;
 import pokemon.map.MapManager;
 import pokemon.map.MapObjectData;
 
+import java.nio.charset.MalformedInputException;
+import java.util.Set;
+
 public class MapObject extends Entity {
     private MapObjectData objectData;
 
@@ -20,7 +23,10 @@ public class MapObject extends Entity {
     public void render(Screen screen) {
         for (int y = 0; y < objectData.getTileHeight(); y++) {
             for (int x = 0; x < objectData.getTileWidth(); x++) {
-                screen.prepareRender(screenPos.getX() + MapManager.offsetX + Settings.SCALED_TILE_SIZE * x, screenPos.getY() + MapManager.offsetY + Settings.SCALED_TILE_SIZE * y, objectData.getSubSprite(x, y), objectData.getTileData(x, y));
+                int tileX = tilePos.intX() + x;
+                int tileY = tilePos.intY() + y;
+                if (tileX < 0 || tileY < 0 || tileX >= MapManager.currentMap.getWidth() || tileY >= MapManager.currentMap.getHeight()) continue;
+                screen.prepareRender(screenPos.getX() + MapManager.offsetX + Settings.TILE_SIZE * x, screenPos.getY() + MapManager.offsetY + Settings.TILE_SIZE * y, objectData.getSubSprite(x, y), objectData.getTileData(x, y));
             }
         }
     }

@@ -78,13 +78,13 @@ public class Map {
     public void render(Screen screen) {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                screen.prepareRender(x * Settings.SCALED_TILE_SIZE + MapManager.offsetX, y * Settings.SCALED_TILE_SIZE + MapManager.offsetY, SpriteList.TILES.get(tiles[x + y * width]), Screen.TILE_LAYER);
+                screen.prepareRender(x * Settings.TILE_SIZE + MapManager.offsetX, y * Settings.TILE_SIZE + MapManager.offsetY, SpriteList.TILES.get(tiles[x + y * width]), Screen.TILE_LAYER);
             }
         }
 
         for (MapObject obj : objects) {
             obj.render(screen);
-            // screen.render(obj.getTilePos().intX() * Settings.SCALED_TILE_SIZE + MapManager.offsetX,  * Settings.SCALED_TILE_SIZE + MapManager.offsetY, SpriteList.TILES.get(tiles[x + y * width]));
+            // screen.render(obj.getTilePos().intX() * Settings.TILE_SIZE + MapManager.offsetX,  * Settings.TILE_SIZE + MapManager.offsetY, SpriteList.TILES.get(tiles[x + y * width]));
         }
 
         if (Game.debug) {
@@ -93,7 +93,7 @@ public class Map {
                     Tile t = specialTiles[x + y * width];
                     if (t == null) continue;
                     if (t instanceof Warp)
-                        screen.prepareRender(x * Settings.SCALED_TILE_SIZE + MapManager.offsetX, y * Settings.SCALED_TILE_SIZE + MapManager.offsetY, SpriteList.WARP_SPRITE, Screen.UI_ELEMENTS);
+                        screen.prepareRender(x * Settings.TILE_SIZE + MapManager.offsetX, y * Settings.TILE_SIZE + MapManager.offsetY, SpriteList.WARP_SPRITE, Screen.UI_ELEMENTS);
                 }
             }
         }

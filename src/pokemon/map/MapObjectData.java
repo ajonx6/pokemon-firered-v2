@@ -25,7 +25,7 @@ public class MapObjectData {
 
         for (int y = 0; y < tileHeight; y++) {
             for (int x = 0; x < tileWidth; x++) {
-                subSprites[x + y * tileWidth] = fullSprite.cutIntoNewSprite(x * Settings.SCALED_TILE_SIZE, y * Settings.SCALED_TILE_SIZE, Settings.SCALED_TILE_SIZE, Settings.SCALED_TILE_SIZE);
+                subSprites[x + y * tileWidth] = fullSprite.cutIntoNewSprite(x * Settings.TILE_SIZE, y * Settings.TILE_SIZE, Settings.TILE_SIZE, Settings.TILE_SIZE);
             }
         }
         

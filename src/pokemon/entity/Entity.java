@@ -11,8 +11,8 @@ public abstract class Entity {
 
     public Entity(double tx, double ty, Sprite sprite) {
         this.tilePos = new Vector(tx, ty);
-        this.worldPos = new Vector(tx * Settings.SCALED_TILE_SIZE, ty * Settings.SCALED_TILE_SIZE);
-        this.screenPos = Vector.mul(tilePos, Settings.SCALED_TILE_SIZE);
+        this.worldPos = new Vector(tx * Settings.TILE_SIZE, ty * Settings.TILE_SIZE);
+        this.screenPos = Vector.mul(tilePos, Settings.TILE_SIZE);
         this.sprite = sprite;
     }
 

@@ -25,14 +25,14 @@ public class Warp extends Tile {
     public void action(Character e) {
         if (!e.hasMoved()) return;
         e.setTilePos(new Vector(otherWarp.tx, otherWarp.ty));
-        e.setWorldPos(Vector.mul(e.getTilePos(), Settings.SCALED_TILE_SIZE));
+        e.setWorldPos(Vector.mul(e.getTilePos(), Settings.TILE_SIZE));
         if (e instanceof Player) {
             e.getScreenPos().set(Game.WIDTH / 2 - e.getSprite().width / 2, Game.HEIGHT / 2 - e.getSprite().height / 2);
-            e.setScreenPos(Vector.add(e.getScreenPos(), 0, Settings.SCALED_TILE_SIZE - e.getSprite().height / 2));
-            MapManager.offsetX -= (otherWarp.tx - tx) * Settings.SCALED_TILE_SIZE;
-            MapManager.offsetY -= (otherWarp.ty - ty) * Settings.SCALED_TILE_SIZE;
+            e.setScreenPos(Vector.add(e.getScreenPos(), 0, Settings.TILE_SIZE - e.getSprite().height / 2));
+            MapManager.offsetX -= (otherWarp.tx - tx) * Settings.TILE_SIZE;
+            MapManager.offsetY -= (otherWarp.ty - ty) * Settings.TILE_SIZE;
         } else {
-            e.setScreenPos(Vector.sub(Vector.mul(e.getTilePos(), Settings.SCALED_TILE_SIZE), 0, e.getSprite().height - Settings.SCALED_TILE_SIZE));
+            e.setScreenPos(Vector.sub(Vector.mul(e.getTilePos(), Settings.TILE_SIZE), 0, e.getSprite().height - Settings.TILE_SIZE));
         }
         e.setHasMoved(false);
     }

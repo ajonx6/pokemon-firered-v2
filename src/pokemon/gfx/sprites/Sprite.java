@@ -7,8 +7,11 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Set;
 
 public class Sprite {
+    public static final Sprite DEFAULT_SPRITE = new Sprite(Settings.TILE_SIZE, Settings.TILE_SIZE, 0xffff00ff);
+
     public BufferedImage image;
     public int width, height;
     public int[] pixels;
@@ -28,7 +31,7 @@ public class Sprite {
             System.exit(1);
         }
 
-        resizeInline(Settings.SCALE);
+        // resizeInline(Settings.SCALE);
     }
 
     public Sprite(BufferedImage image) {
@@ -62,11 +65,7 @@ public class Sprite {
         this.image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         image.setRGB(0, 0, width, height, pixels, 0, width);
 
-        resizeInline(Settings.SCALE);
-    }
-
-    public Sprite cutIntoNewSprite(double x1, double y1, double x2, double y2) {
-        return cutIntoNewSprite((int) x1, (int) y1, (int) x2, (int) y2);
+        // resizeInline(Settings.SCALE);
     }
 
     // public Sprite cutIntoNewSprite(int x1, int y1, int x2, int y2) {
