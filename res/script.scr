@@ -1,0 +1,15 @@
+@main
+loadvar player_name name
+print Hello $name$!%nHow are you today?%nI'm glad you're ok!%pGoodbye $name$...
+print Ok this is a second page%pEnjoy $name$!
+jump func1
+end
+
+@func2
+print This is method 2...
+end
+
+@func1
+print This is method 1...
+jump func2
+end
