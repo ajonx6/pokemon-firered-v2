@@ -8,11 +8,13 @@ import firered.map.MapManager;
 import firered.scripts.Script;
 import firered.util.Vector;
 
+import java.util.Map;
+
 public class Player extends Character {
     public static final String NAME = "Ajonx";
     
-    public Player(double wx, double wy, Sprite sprite) {
-        super(wx, wy, sprite);
+    public Player(double wx, double wy, Map<String, Sprite> sprites) {
+        super(wx, wy, sprites);
         MapManager.offsetX = Game.WIDTH / 2 - (worldPos.getX() + sprite.width / 2);
         MapManager.offsetY = Game.HEIGHT / 2 - (worldPos.getY() + sprite.height / 2 + 8 - Settings.TILE_SIZE - 3);
         this.screenPos.set(Game.WIDTH / 2 - sprite.width / 2, Game.HEIGHT / 2 - sprite.height / 2);

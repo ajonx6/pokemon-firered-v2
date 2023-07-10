@@ -1,10 +1,14 @@
 package firered.util;
 
+import firered.gfx.sprites.Sprite;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Util {
 	public static int colourLerp(int c1, int c2, float value) {
@@ -34,6 +38,14 @@ public class Util {
 		System.err.println(msg);
 		System.exit(1);
 		return null;
+	}
+
+	public static Map<String, Sprite> charsToSprites(String name, String... types) {
+		Map<String, Sprite> spr = new HashMap<>();
+		for (int i = 0; i < types.length; i++) {
+			spr.put(types[i], new Sprite("entities/" + name + "/" + name + "_" + types[i]));
+		}
+		return spr;
 	}
 
 	public static List<String> scriptToMessages(String message) {

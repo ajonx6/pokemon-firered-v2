@@ -19,7 +19,11 @@ public class MapManager {
 	}
 
 	public static Script scriptUnder(Entity e) {
-		return currentMap.scriptUnder(e);
+		return currentMap.scriptUnder(e.getTilePos().intX(), e.getTilePos().intY());
+	}
+
+	public static Script scriptUnder(int x, int y) {
+		return currentMap.scriptUnder(x, y);
 	}
 
 	public static boolean collisionAt(Vector tilePos) {

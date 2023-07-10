@@ -70,10 +70,10 @@ public class Map {
         return specialTiles[e.getTilePos().intX() + e.getTilePos().intY() * width];
     }
     
-    public Script scriptUnder(Entity e) {
-        if (e.getTilePos().intX() >= width || e.getTilePos().intX() < 0 || e.getTilePos().intY() >= height || e.getTilePos().intY() < 0)
+    public Script scriptUnder(int x, int y) {
+        if (x >= width || x < 0 || y >= height || y < 0)
             return null;
-        return scripts[e.getTilePos().intX() + e.getTilePos().intY() * width];
+        return scripts[x + y * width];
     }
 
     public boolean collisionAt(Vector tilePos) {

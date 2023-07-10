@@ -1,0 +1,4 @@
+@main
+loadvar player_name name
+print $name$'s House
+end

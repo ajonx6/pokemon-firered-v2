@@ -17,6 +17,7 @@ import firered.scripts.Script;
 import firered.scripts.GameVariablesForScripts;
 import firered.scripts.YesnoEvent;
 import firered.ui.*;
+import firered.util.Util;
 
 import javax.swing.*;
 import java.awt.*;
@@ -66,8 +67,8 @@ public class Game extends Canvas implements Runnable {
 		GameVariablesForScripts.init();
 
 		screen = new Screen(WIDTH, HEIGHT);
-		player = new Player(4, 4, new Sprite("entities/player_sprite"));
-		npc = new Character(2, 2, new Sprite("entities/npc_sprite"));
+		player = new Player(4, 4, Util.charsToSprites("player", "down", "up", "left", "right"));
+		npc = new Character(2, 2, Util.charsToSprites("player", "down", "up", "left", "right"));
 
 		MapManager.loadMap(Map.MAPS_MAP.get("pallet_town"));
 		MapManager.currentMap.addEntity(player);
@@ -87,8 +88,8 @@ public class Game extends Canvas implements Runnable {
 		WarpManager.init(MapManager.currentMap);
 		addKeyListener(new KeyInput());
 
-		script = new Script("script5.scr");
-		MapManager.currentMap.addScript(script, 3, 3);
+		script = new Script("map/pallet_town/player_house_sign.scr");
+		MapManager.currentMap.addScript(script, 4, 7);
 	}
 
 	// Returns the instance of this class so other classes can access these variables
@@ -179,6 +180,11 @@ public class Game extends Canvas implements Runnable {
 				if (KeyInput.isDown(KeyEvent.VK_S)) npc.move(0, 1);
 				if (KeyInput.isDown(KeyEvent.VK_A)) npc.move(-1, 0);
 				if (KeyInput.isDown(KeyEvent.VK_D)) npc.move(1, 0);
+				
+				if (KeyInput.wasPressed(KeyEvent.VK_X) && !player.currentlyMoving) {
+					Script s = MapManager.scriptUnder(player.getTilePos().intX() + player.facing.dx, player.getTilePos().intY() + player.facing.dy);
+					if (s != null) s.startScript();
+				}
 				
 				player.tick(delta);
 				npc.tick(delta);
