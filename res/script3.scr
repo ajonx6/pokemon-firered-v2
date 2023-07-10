@@ -1,0 +1,34 @@
+@main
+print L0-1
+call l1
+print L0-2
+end
+
+@l1
+print L1-1
+call l2
+print L1-2
+end
+
+@l2
+print L2-1
+call l3
+print L2-2
+end
+
+@l3
+print L3-1
+call l4
+print L3-2
+end
+
+@l4
+print L4-1
+call l5
+print L4-2
+end
+
+@l5
+print L5-1
+print L5-2
+end

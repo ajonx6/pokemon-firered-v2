@@ -1,0 +1,77 @@
+@main
+print Think of a number between%n0 and 9...%pI shall try to guess it!
+yesno le5 gte5 Is your number < 5?
+end
+
+@le5
+yesno le3 gte3 Is your number < 3?
+end
+
+@le3
+yesno le2 is2 Is your number < 2?
+end
+
+@le2
+yesno is0 is1 Is your number < 1?
+end
+
+@gte3
+yesno is3 is4 Is your number < 4?
+end
+
+56 789
+@gte5
+yesno le7 gte7 Is your number < 7?
+end
+
+@le7
+yesno is5 is6 Is your number < 6?
+end
+
+@gte7
+yesno is7 gte8 Is your number < 8
+end
+
+@gte8
+yesno is8 is9 Is your number < 9?
+end
+
+@is0
+print Your number is 0.
+end
+
+@is1
+print Your number is 1.
+end
+
+@is2
+print Your number is 2.
+end
+
+@is3
+print Your number is 3.
+end
+
+@is4
+print Your number is 4.
+end
+
+@is5
+print Your number is 5.
+end
+
+@is6
+print Your number is 6.
+end
+
+@is7
+print Your number is 7.
+end
+
+@is8
+print Your number is 8.
+end
+
+@is9
+print Your number is 9.
+end

@@ -15,6 +15,7 @@ import firered.pokemon.StatusEffect;
 import firered.pokemon.moves.Move;
 import firered.scripts.Script;
 import firered.scripts.GameVariablesForScripts;
+import firered.scripts.YesnoEvent;
 import firered.ui.*;
 
 import javax.swing.*;
@@ -48,6 +49,7 @@ public class Game extends Canvas implements Runnable {
 	public static Character npc;
 	public static Player player;
 	public static MessageBox messageBox;
+	public static YesnoBox yesnoBox;
 	public static State gameState = State.NORMAL;
 
 	public static Pokemon p1;
@@ -72,6 +74,7 @@ public class Game extends Canvas implements Runnable {
 		MapManager.currentMap.addEntity(npc);
 
 		messageBox = new MessageBox(MessageBox.UI1, MyFont.DARK_FONT);
+		yesnoBox = new YesnoBox();
 
 		p1 = new Pokemon(BasePokemon.BASE_PIKACHU, 100, Pokemon.USE_BASE_HP, 10, 2, 10);
 		p1.addMoves(Move.THUNDER_SHOCK, Move.GROWL, Move.QUICK_ATTACK, Move.THUNDER_WAVE);
@@ -84,7 +87,8 @@ public class Game extends Canvas implements Runnable {
 		WarpManager.init(MapManager.currentMap);
 		addKeyListener(new KeyInput());
 
-		script = new Script("script.scr");
+		script = new Script("script5.scr");
+		MapManager.currentMap.addScript(script, 3, 3);
 	}
 
 	// Returns the instance of this class so other classes can access these variables
@@ -175,16 +179,14 @@ public class Game extends Canvas implements Runnable {
 				if (KeyInput.isDown(KeyEvent.VK_S)) npc.move(0, 1);
 				if (KeyInput.isDown(KeyEvent.VK_A)) npc.move(-1, 0);
 				if (KeyInput.isDown(KeyEvent.VK_D)) npc.move(1, 0);
-
-				messageBox.tick(delta);
+				
 				player.tick(delta);
 				npc.tick(delta);
 			}
 			case MESSAGE_BOX -> {
-				if (messageBox.active && !messageBox.stillRendering() && KeyInput.wasPressed(KeyEvent.VK_X)) {
+				if (messageBox.active && !messageBox.stillRendering() && KeyInput.wasPressed(KeyEvent.VK_X) && !yesnoBox.active) {
 					messageBox.continueText();
 				}
-				messageBox.tick(delta);
 			}
 			case COMMAND -> {
 				for (int i = 'A'; i <= 'Z'; i++) {
@@ -222,6 +224,8 @@ public class Game extends Canvas implements Runnable {
 			}
 		}
 
+		messageBox.tick(delta);
+		yesnoBox.tick(delta);
 		KeyInput.tick(delta);
 	}
 
@@ -239,6 +243,7 @@ public class Game extends Canvas implements Runnable {
 			player.render(screen);
 			npc.render(screen);
 			messageBox.render(screen);
+			yesnoBox.render(screen);
 		} else if (gameState == State.BATTLE) {
 			battle.render(screen);
 		}

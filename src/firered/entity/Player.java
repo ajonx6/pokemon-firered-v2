@@ -5,6 +5,7 @@ import firered.Settings;
 import firered.gfx.Screen;
 import firered.gfx.sprites.Sprite;
 import firered.map.MapManager;
+import firered.scripts.Script;
 import firered.util.Vector;
 
 public class Player extends Character {
@@ -40,6 +41,11 @@ public class Player extends Character {
 
     public void tick(double delta) {
         super.tick(delta);
+        Script scriptUnder = MapManager.scriptUnder(this);
+        if (scriptUnder != null && !currentlyMoving && hasMoved) {
+            scriptUnder.startScript();
+            hasMoved = false;
+        }
     }
 
     public void render(Screen screen) {

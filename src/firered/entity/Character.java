@@ -30,6 +30,7 @@ public class Character extends Entity {
             this.dx = dx * Settings.TILE_SIZE / TILE_MOVE_TIME;
             this.dy = dy * Settings.TILE_SIZE / TILE_MOVE_TIME;
             this.destinationTile = dest;
+            this.tilePos.set(destinationTile);
             this.hasMoved = true;
         }
     }

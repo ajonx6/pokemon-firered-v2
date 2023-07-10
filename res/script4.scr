@@ -1,0 +1,12 @@
+@main
+cflag SEEN_PLAYER seen new
+end
+
+@seen
+print Do you wa-%pWait%pI've already served you!
+end
+
+@new
+sflag SEEN_PLAYER
+print Do you want a free sample?%nHere you go!
+end

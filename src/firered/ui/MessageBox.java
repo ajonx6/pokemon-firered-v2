@@ -38,6 +38,7 @@ public class MessageBox extends UIBox {
 	public boolean active = false;
 	public boolean debugMode = false;
 	public Script script;
+	public boolean useYesNoBox = false;
 
 	public MessageBox(Sprite ui, MyFont font) {
 		this(DEFAULT_PADDING, ui, font);
@@ -52,6 +53,10 @@ public class MessageBox extends UIBox {
 
 	public void attachScript(Script script) {
 		this.script = script;
+	}
+
+	public void useYesnoBox() {
+		this.useYesNoBox = true;
 	}
 
 	public void addText(List<String> toAdd) {
@@ -150,7 +155,11 @@ public class MessageBox extends UIBox {
 				text2.text = line2.substring(0, ++line2Index);
 			}
 		} else {
-			renderNextArrow = true;
+			if (useYesNoBox && textToRender.isEmpty()) {
+				Game.yesnoBox.active = true;
+			} else {
+				renderNextArrow = true;
+			}
 		}
 	}
 

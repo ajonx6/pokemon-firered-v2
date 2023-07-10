@@ -7,6 +7,7 @@ import firered.entity.MapObject;
 import firered.gfx.Screen;
 import firered.gfx.SpriteList;
 import firered.map.warp.Warp;
+import firered.scripts.Script;
 import firered.util.Vector;
 
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ public class Map {
     private String[] tiles;
     private Tile[] specialTiles;
     private int[] collisionData;
+    private Script[] scripts;
 
     private List<Entity> entities = new ArrayList<>();
     private List<MapObject> objects = new ArrayList<>();
@@ -36,6 +38,7 @@ public class Map {
         this.tiles = new String[width * height];
         this.specialTiles = new Tile[width * height];
         this.collisionData = new int[width * height];
+        this.scripts = new Script[width * height];
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
@@ -55,6 +58,7 @@ public class Map {
         this.tiles = new String[width * height];
         this.specialTiles = new Tile[width * height];
         this.collisionData = new int[width * height];
+        this.scripts = new Script[width * height];
         System.arraycopy(tiles, 0, this.tiles, 0, tiles.length);
 
         MAPS_MAP.put(name, this);
@@ -64,6 +68,12 @@ public class Map {
         if (e.getTilePos().intX() >= width || e.getTilePos().intX() < 0 || e.getTilePos().intY() >= height || e.getTilePos().intY() < 0)
             return null;
         return specialTiles[e.getTilePos().intX() + e.getTilePos().intY() * width];
+    }
+    
+    public Script scriptUnder(Entity e) {
+        if (e.getTilePos().intX() >= width || e.getTilePos().intX() < 0 || e.getTilePos().intY() >= height || e.getTilePos().intY() < 0)
+            return null;
+        return scripts[e.getTilePos().intX() + e.getTilePos().intY() * width];
     }
 
     public boolean collisionAt(Vector tilePos) {
@@ -116,6 +126,10 @@ public class Map {
                 if (o.getObjectData().getTileData(x, y) == 1) collisionData[o.getTilePos().intX() + x + (o.getTilePos().intY() + y) * width] = 1;
             }
         }
+    }
+    
+    public void addScript(Script s, int tx, int ty) {
+        this.scripts[tx + ty * width] = s;
     }
 
     public String getName() {

@@ -1,0 +1,20 @@
+@main
+cflag SEEN_PLAYER seen ask
+end
+
+@seen
+print Do you wa-%pWait%pI've already given you a%nfree item!
+end
+
+@ask
+yesno wants nowant Do you want a free item?
+end
+
+@wants
+sflag SEEN_PLAYER
+print Here you go.
+end
+
+@nowant
+print Ah, maybe next time.
+end
