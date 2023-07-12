@@ -6,6 +6,7 @@ import firered.entity.Player;
 import firered.gfx.sprites.Sprite;
 import firered.map.Map;
 import firered.map.MapObjectData;
+import firered.map.warp.Warp;
 import firered.scripts.Script;
 import firered.util.Util;
 
@@ -111,6 +112,18 @@ public class Loader {
 			} else if (type.equals("char")) {
 				map.getNPCByID(Integer.parseInt(tokens[3])).attachScriptOnInteract(s);
 			}
+		}
+
+		while (data.get(currentDataIndex).startsWith("warp ")) {
+			String line = data.get(currentDataIndex++);
+			String[] tokens = line.split(" ");
+			if (tokens[1].equals("#")) continue;
+			String[] posIn = tokens[1].split(",");
+			String dest = tokens[2];
+			String[] posOut = tokens[3].split(",");
+			Warp w1 = new Warp(Integer.parseInt(posIn[0]), Integer.parseInt(posIn[1]), map);
+			Warp w2 = new Warp(Integer.parseInt(posOut[0]), Integer.parseInt(posOut[1]), Map.MAPS_MAP.get(dest));
+			w1.connect(w2);
 		}
 	}
 }

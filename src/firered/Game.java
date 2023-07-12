@@ -1,13 +1,11 @@
 package firered;
 
 import firered.battle.Battle;
-import firered.entity.NPC;
 import firered.entity.Player;
 import firered.gfx.Screen;
 import firered.gfx.SpriteList;
 import firered.map.Map;
 import firered.map.MapManager;
-import firered.map.warp.WarpManager;
 import firered.pokemon.BasePokemon;
 import firered.pokemon.Pokemon;
 import firered.pokemon.moves.Move;
@@ -74,7 +72,6 @@ public class Game extends Canvas implements Runnable {
 		p3.addMoves(Move.TACKLE, Move.VINE_WHIP, Move.RAZOR_LEAF, Move.GROWTH);
 		battle = new Battle(p3, p1);
 
-		WarpManager.init(MapManager.currentMap);
 		addKeyListener(new KeyInput());
 	}
 
