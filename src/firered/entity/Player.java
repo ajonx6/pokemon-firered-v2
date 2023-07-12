@@ -10,15 +10,25 @@ import firered.util.Vector;
 
 import java.util.Map;
 
-public class Player extends Character {
+public class Player extends firered.entity.NPC {
     public static final String NAME = "Ajonx";
-    
-    public Player(double wx, double wy, Map<String, Sprite> sprites) {
-        super(wx, wy, sprites);
+	public static final String RIVAL_NAME = "Ash";
+
+    public Player(String name, Map<String, Sprite> sprites) {
+        super(name, sprites);
+    }
+
+	public Player(int id, double wx, double wy, Map<String, Sprite> sprites) {
+        super(id, wx, wy, sprites);
         MapManager.offsetX = Game.WIDTH / 2 - (worldPos.getX() + sprite.width / 2);
         MapManager.offsetY = Game.HEIGHT / 2 - (worldPos.getY() + sprite.height / 2 + 8 - Settings.TILE_SIZE - 3);
         this.screenPos.set(Game.WIDTH / 2 - sprite.width / 2, Game.HEIGHT / 2 - sprite.height / 2);
         this.screenPos = Vector.add(screenPos, 0, Settings.TILE_SIZE - sprite.height / 2);// new Vector(Game.WIDTH / 2 - sprite.width / 2, Game.HEIGHT / 2 - Settings.TILE_SIZE - );
+    }
+
+    public Player instantiate(int id, double tx, double ty) {
+        Player c = new Player(id, tx, ty, sprites);
+        return c;
     }
 
     public void processMovement(double delta) {

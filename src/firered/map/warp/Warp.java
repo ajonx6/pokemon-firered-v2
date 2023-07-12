@@ -2,7 +2,7 @@ package firered.map.warp;
 
 import firered.Game;
 import firered.Settings;
-import firered.entity.Character;
+import firered.entity.NPC;
 import firered.entity.Player;
 import firered.map.Map;
 import firered.map.MapManager;
@@ -22,7 +22,7 @@ public class Warp extends Tile {
         other.otherWarp = this;
     }
 
-    public void action(Character e) {
+    public void action(NPC e) {
         if (!e.hasMoved()) return;
         e.setTilePos(new Vector(otherWarp.tx, otherWarp.ty));
         e.setWorldPos(Vector.mul(e.getTilePos(), Settings.TILE_SIZE));

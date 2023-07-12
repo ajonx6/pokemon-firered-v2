@@ -1,23 +1,19 @@
 package firered;
 
 import firered.battle.Battle;
-import firered.entity.Character;
+import firered.entity.NPC;
 import firered.entity.Player;
 import firered.gfx.Screen;
 import firered.gfx.SpriteList;
-import firered.gfx.sprites.Sprite;
 import firered.map.Map;
 import firered.map.MapManager;
 import firered.map.warp.WarpManager;
 import firered.pokemon.BasePokemon;
 import firered.pokemon.Pokemon;
-import firered.pokemon.StatusEffect;
 import firered.pokemon.moves.Move;
 import firered.scripts.Script;
 import firered.scripts.GameVariablesForScripts;
-import firered.scripts.YesnoEvent;
 import firered.ui.*;
-import firered.util.Util;
 
 import javax.swing.*;
 import java.awt.*;
@@ -47,7 +43,6 @@ public class Game extends Canvas implements Runnable {
 	public boolean running;
 
 	public static Screen screen;
-	public static Character npc;
 	public static Player player;
 	public static MessageBox messageBox;
 	public static YesnoBox yesnoBox;
@@ -57,9 +52,7 @@ public class Game extends Canvas implements Runnable {
 	public static Pokemon p2;
 	public static Pokemon p3;
 	public static Battle battle;
-
-	public Script script;
-
+	
 	private Game() {
 		SpriteList.init();
 		Loader.loadObjects();
@@ -67,12 +60,8 @@ public class Game extends Canvas implements Runnable {
 		GameVariablesForScripts.init();
 
 		screen = new Screen(WIDTH, HEIGHT);
-		player = new Player(4, 4, Util.charsToSprites("player", "down", "up", "left", "right"));
-		npc = new Character(2, 2, Util.charsToSprites("player", "down", "up", "left", "right"));
 
 		MapManager.loadMap(Map.MAPS_MAP.get("pallet_town"));
-		MapManager.currentMap.addEntity(player);
-		MapManager.currentMap.addEntity(npc);
 
 		messageBox = new MessageBox(MessageBox.UI1, MyFont.DARK_FONT);
 		yesnoBox = new YesnoBox();
@@ -87,9 +76,6 @@ public class Game extends Canvas implements Runnable {
 
 		WarpManager.init(MapManager.currentMap);
 		addKeyListener(new KeyInput());
-
-		script = new Script("map/pallet_town/player_house_sign.scr");
-		MapManager.currentMap.addScript(script, 4, 7);
 	}
 
 	// Returns the instance of this class so other classes can access these variables
@@ -164,7 +150,7 @@ public class Game extends Canvas implements Runnable {
 					break;
 				}
 
-				if (KeyInput.wasPressed(KeyEvent.VK_1)) script.startScript();
+				// if (KeyInput.wasPressed(KeyEvent.VK_1)) script.startScript();
 
 				if (KeyInput.wasPressed(KeyEvent.VK_B)) {
 					battle.init();
@@ -175,24 +161,23 @@ public class Game extends Canvas implements Runnable {
 				if (KeyInput.isDown(KeyEvent.VK_DOWN)) player.move(0, 1);
 				if (KeyInput.isDown(KeyEvent.VK_LEFT)) player.move(-1, 0);
 				if (KeyInput.isDown(KeyEvent.VK_RIGHT)) player.move(1, 0);
-
-				if (KeyInput.isDown(KeyEvent.VK_W)) npc.move(0, -1);
-				if (KeyInput.isDown(KeyEvent.VK_S)) npc.move(0, 1);
-				if (KeyInput.isDown(KeyEvent.VK_A)) npc.move(-1, 0);
-				if (KeyInput.isDown(KeyEvent.VK_D)) npc.move(1, 0);
 				
 				if (KeyInput.wasPressed(KeyEvent.VK_X) && !player.currentlyMoving) {
 					Script s = MapManager.scriptUnder(player.getTilePos().intX() + player.facing.dx, player.getTilePos().intY() + player.facing.dy);
-					if (s != null) s.startScript();
+					Script e = MapManager.entityHasScript(player.getTilePos().intX() + player.facing.dx, player.getTilePos().intY() + player.facing.dy);
+					if (e != null) e.startScript();
+					else if (s != null) s.startScript();
 				}
 				
-				player.tick(delta);
-				npc.tick(delta);
+				// player.tick(delta);
+				// npc.tick(delta);
 			}
 			case MESSAGE_BOX -> {
 				if (messageBox.active && !messageBox.stillRendering() && KeyInput.wasPressed(KeyEvent.VK_X) && !yesnoBox.active) {
 					messageBox.continueText();
 				}
+				// player.tick(delta);
+				// npc.tick(delta);
 			}
 			case COMMAND -> {
 				for (int i = 'A'; i <= 'Z'; i++) {
@@ -232,6 +217,7 @@ public class Game extends Canvas implements Runnable {
 
 		messageBox.tick(delta);
 		yesnoBox.tick(delta);
+		MapManager.tick(delta);
 		KeyInput.tick(delta);
 	}
 
@@ -247,7 +233,6 @@ public class Game extends Canvas implements Runnable {
 		if (gameState == State.NORMAL || gameState == State.COMMAND || gameState == State.MESSAGE_BOX) {
 			MapManager.render(screen);
 			player.render(screen);
-			npc.render(screen);
 			messageBox.render(screen);
 			yesnoBox.render(screen);
 		} else if (gameState == State.BATTLE) {

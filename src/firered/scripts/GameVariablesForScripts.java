@@ -12,6 +12,7 @@ public class GameVariablesForScripts {
 	
 	public static void init() {
 		vars.put("player_name", Player.NAME);
+		vars.put("rival_name", Player.RIVAL_NAME);
 	}
 
 	public static void setFlag(String s) {

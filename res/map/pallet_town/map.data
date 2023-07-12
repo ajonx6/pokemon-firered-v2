@@ -30,4 +30,10 @@ obj white_sign 9,11,16,16
 obj red_flower 5,12,6,12,7,12,8,12,5,13,6,13,7,13,8,13
 obj mail_box 4,6,13,6
 obj wood_sign 5,14
+char player 0 4,4
+char npc 1 2,2
+script object player_house_sign 4,7
+script object rival_house_sign 13,7
+script char npc_script 1 
+script tile tile_script 3,3
 end

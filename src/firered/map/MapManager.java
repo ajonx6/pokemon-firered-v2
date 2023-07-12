@@ -26,11 +26,19 @@ public class MapManager {
 		return currentMap.scriptUnder(x, y);
 	}
 
+	public static Script entityHasScript(int x, int y) {
+		return currentMap.entityHasScript(x, y);
+	}
+
 	public static boolean collisionAt(Vector tilePos) {
 		return currentMap.collisionAt(tilePos);
 	}
 
 	public static void render(Screen screen) {
 		currentMap.render(screen);
+	}
+
+	public static void tick(double delta) {
+		currentMap.tick(delta);
 	}
 }

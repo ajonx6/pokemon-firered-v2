@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 public class Util {
+	public static final double EPSILON = 0.000001;
+	
 	public static int colourLerp(int c1, int c2, float value) {
 		return (0xff << 24) | ((int) ((float) ((c1 >> 16) & 0xff) * value) + (int) ((float) ((c2 >> 16) & 0xff) * (1f - value))) << 16 | ((int) ((float) ((c1 >> 8) & 0xff) * value) + (int) ((float) ((c2 >> 8) & 0xff) * (1f - value))) << 8 | ((int) ((float) (c1 & 0xff) * value) + (int) ((float) (c2 & 0xff) * (1f - value)));
 	}

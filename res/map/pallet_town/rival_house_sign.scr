@@ -1,0 +1,4 @@
+@main
+loadvar rival_name name
+print $name$'s House
+end

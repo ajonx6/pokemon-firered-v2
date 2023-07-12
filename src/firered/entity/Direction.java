@@ -9,4 +9,21 @@ public enum Direction {
 		this.dx = dx;
 		this.dy = dy;
 	}
+	
+	public static Direction getByInitial(String c) {
+		c = c.toLowerCase();
+		if (c.equals("u")) return UP;
+		if (c.equals("d")) return DOWN;
+		if (c.equals("l")) return LEFT;
+		if (c.equals("r")) return RIGHT;
+		return null;
+	}
+	
+	public Direction flip() {
+		if (this == UP) return DOWN;
+		if (this == DOWN) return UP;
+		if (this == LEFT) return RIGHT;
+		if (this == RIGHT) return LEFT;
+		return null;
+	}
 }

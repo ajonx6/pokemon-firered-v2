@@ -1,6 +1,6 @@
 package firered.map;
 
-import firered.entity.Character;
+import firered.entity.NPC;
 
 public abstract class Tile {
     public int tx, ty;
@@ -10,5 +10,5 @@ public abstract class Tile {
         this.ty = ty;
     }
     
-    public abstract void action(Character e);
+    public abstract void action(NPC e);
 }

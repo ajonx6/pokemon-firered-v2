@@ -2,9 +2,9 @@ package firered.scripts;
 
 import firered.Game;
 import firered.State;
+import firered.util.Timer;
 import firered.util.Util;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
@@ -15,9 +15,10 @@ public class Script {
 
 	public Function currentFunction;
 	public Stack<Function> callStack = new Stack<>();
+	public Timer timer;
 
 	public Script(String path) {
-		List<String> lines = Util.load(path);
+		List<String> lines = Util.load(path + ".scr");
 		String currentName = "";
 		for (String line : lines) {
 			if (line.trim().equals("")) continue;
@@ -30,6 +31,16 @@ public class Script {
 		}
 	}
 
+	public void tick(double delta) {
+		if (timer != null && timer.tick(delta)) {
+			timer = null;
+			nextLine();
+		}
+	}
+
+	/////////////////////////////////
+	// IF CID NEGATIVE, MEANS SELF //
+	/////////////////////////////////
 	public void nextLine() {
 		String line = currentFunction.getLine();
 		System.out.println(currentFunction.name + " (" + (currentFunction.lineNumber - 1) + ") line=" + line);
@@ -57,6 +68,16 @@ public class Script {
 				if (tokens[3].equals("-")) nextLine();
 				else callFunction(tokens[3]);
 			}
+		} else if (tokens[0].equals("move")) {
+			MoveScript.Move(this, Integer.parseInt(tokens[1]), line.split(tokens[1])[1].substring(1));
+		} else if (tokens[0].equals("faceplayer")) {
+			ChangeCharacterDirectionScript.facePlayer(Integer.parseInt(tokens[1]));
+			nextLine();
+		} else if (tokens[0].equals("face")) {
+			ChangeCharacterDirectionScript.face(Integer.parseInt(tokens[1]), tokens[2]);
+			nextLine();
+		} else if (tokens[0].equals("wait")) {
+			timer = new Timer(Double.parseDouble(tokens[1]));
 		} else if (tokens[0].equals("end")) {
 			if (callStack.isEmpty()) {
 				Game.gameState = State.NORMAL;

@@ -27,7 +27,6 @@ public class YesnoEvent {
 		Game.messageBox.addText(Util.scriptToMessages(res));
 		// Game.messageBox.attachScript(script);
 		Game.messageBox.useYesnoBox();
-		System.out.println("Setting " + yesFuncName + ", " + noFuncName);
 		Game.yesnoBox.setFunctions(script, yesFuncName, noFuncName);
 	}
 }
