@@ -6,7 +6,10 @@ import firered.entity.Player;
 import firered.gfx.sprites.Sprite;
 import firered.map.Map;
 import firered.map.MapObjectData;
+import firered.map.WildPokemonData;
+import firered.map.WildPokemonRarity;
 import firered.map.warp.Warp;
+import firered.pokemon.BasePokemon;
 import firered.scripts.Script;
 import firered.util.Util;
 
@@ -81,9 +84,22 @@ public class Loader {
 			String line = data.get(currentDataIndex++);
 			String[] tokens = line.split(" ");
 			if (tokens[1].equals("#")) continue;
-			String[] pos = tokens[2].split(",");
-			for (int i = 0; i < pos.length; i += 2) {
-				map.addObject(new MapObject(Integer.parseInt(pos[i]), Integer.parseInt(pos[i + 1]), MapObjectData.MAP_OBJECTS.get(tokens[1])));
+			String[] positions = tokens[2].split("/");
+			for (String pos : positions) {
+				if (pos.startsWith("l")) {
+					String[] tks = pos.substring(1).split(",");
+					int x = Integer.parseInt(tks[0]), y = Integer.parseInt(tks[1]);
+					int dx = Integer.parseInt(tks[2]), dy = Integer.parseInt(tks[3]);
+					int nx = Integer.parseInt(tks[4]), ny = Integer.parseInt(tks[5]);
+					for (int xx = 0; xx < nx; xx++) {
+						for (int yy = 0; yy < ny; yy++) {
+							map.addObject(new MapObject(x + xx * dx, y + yy * dy, MapObjectData.MAP_OBJECTS.get(tokens[1])));
+						}
+					}
+				} else {
+					String[] ps = pos.split(",");
+					map.addObject(new MapObject(Integer.parseInt(ps[0]), Integer.parseInt(ps[1]), MapObjectData.MAP_OBJECTS.get(tokens[1])));
+				}
 			}
 		}
 
@@ -124,6 +140,19 @@ public class Loader {
 			Warp w1 = new Warp(Integer.parseInt(posIn[0]), Integer.parseInt(posIn[1]), map);
 			Warp w2 = new Warp(Integer.parseInt(posOut[0]), Integer.parseInt(posOut[1]), Map.MAPS_MAP.get(dest));
 			w1.connect(w2);
+		}
+		
+		if (data.get(currentDataIndex).startsWith("wild ")) {
+			String line = data.get(currentDataIndex++);
+			String[] tokens = line.split(" ");
+			WildPokemonRarity wpr = WildPokemonRarity.getRarityBySymbol(tokens[1]);
+			String[] pokes = tokens[2].split("/");
+			List<WildPokemonData> wpd = new ArrayList<>();
+			for (String dat : pokes) {
+				String[] ds = dat.split(",");
+				wpd.add(new WildPokemonData(BasePokemon.BASE_POKEMON.get(ds[0]), Integer.parseInt(ds[1]), Integer.parseInt(ds[2]), Double.parseDouble(ds[3])));
+			}
+			map.setWildPokemon(wpr, wpd);
 		}
 	}
 }

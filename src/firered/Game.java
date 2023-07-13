@@ -8,10 +8,12 @@ import firered.map.Map;
 import firered.map.MapManager;
 import firered.pokemon.BasePokemon;
 import firered.pokemon.Pokemon;
+import firered.pokemon.StatusEffect;
 import firered.pokemon.moves.Move;
 import firered.scripts.Script;
 import firered.scripts.GameVariablesForScripts;
 import firered.ui.*;
+import firered.util.Util;
 
 import javax.swing.*;
 import java.awt.*;
@@ -49,28 +51,30 @@ public class Game extends Canvas implements Runnable {
 	public static Pokemon p1;
 	public static Pokemon p2;
 	public static Pokemon p3;
-	public static Battle battle;
+	public static Battle battle = new Battle();
 	
 	private Game() {
 		SpriteList.init();
+		BasePokemon.init();
 		Loader.loadObjects();
 		Loader.loadMaps();
 		GameVariablesForScripts.init();
 
 		screen = new Screen(WIDTH, HEIGHT);
 
-		MapManager.loadMap(Map.MAPS_MAP.get("pallet_town"));
+		MapManager.loadMap(Map.MAPS_MAP.get("route1"));
+		// MapManager.loadMap(Map.MAPS_MAP.get("pallet_town"));
+		player = new Player(0, 4, 4, Util.charsToSprites("player", "down", "up", "left", "right"));
 
 		messageBox = new MessageBox(MessageBox.UI1, MyFont.DARK_FONT);
 		yesnoBox = new YesnoBox();
 
-		p1 = new Pokemon(BasePokemon.BASE_PIKACHU, 100, Pokemon.USE_BASE_HP, 10, 2, 10);
+		p1 = new Pokemon(BasePokemon.BASE_POKEMON.get("Pikachu"), 100, Pokemon.USE_BASE_HP, 10, 2, 10);
 		p1.addMoves(Move.THUNDER_SHOCK, Move.GROWL, Move.QUICK_ATTACK, Move.THUNDER_WAVE);
-		p2 = new Pokemon(BasePokemon.BASE_GASTLY, 100, Pokemon.USE_BASE_HP, 4, 3, 12);
+		p2 = new Pokemon(BasePokemon.BASE_POKEMON.get("Gastly"), 100, Pokemon.USE_BASE_HP, 4, 3, 12);
 		p2.addMoves(Move.HYPNOSIS, Move.LICK, Move.DREAM_EATER, Move.SHADOW_BALL);
-		p3 = new Pokemon(BasePokemon.BASE_BULBASAUR, 100, Pokemon.USE_BASE_HP, 5, 5, 10);
+		p3 = new Pokemon(BasePokemon.BASE_POKEMON.get("Bulbasaur"), 100, Pokemon.USE_BASE_HP, 5, 5, 10);
 		p3.addMoves(Move.TACKLE, Move.VINE_WHIP, Move.RAZOR_LEAF, Move.GROWTH);
-		battle = new Battle(p3, p1);
 
 		addKeyListener(new KeyInput());
 	}
@@ -116,6 +120,7 @@ public class Game extends Canvas implements Runnable {
 				ticks++;
 				if (frameCounter >= Time.SECOND) {
 					frame.setTitle(TITLE + " | FPS: " + frames + ", UPS: " + ticks);
+					// System.out.println("FPS: " + frames + ", UPS: " + ticks);
 					frames = 0;
 					ticks = 0;
 					frameCounter = 0;
@@ -138,7 +143,7 @@ public class Game extends Canvas implements Runnable {
 		double delta = Time.getFrameTimeInSeconds();
 
 		if (KeyInput.wasPressed(KeyEvent.VK_ESCAPE)) System.exit(0);
-
+		
 		switch (gameState) {
 			case NORMAL -> {
 				if (KeyInput.wasPressed(KeyEvent.VK_SLASH)) {
@@ -150,7 +155,7 @@ public class Game extends Canvas implements Runnable {
 				// if (KeyInput.wasPressed(KeyEvent.VK_1)) script.startScript();
 
 				if (KeyInput.wasPressed(KeyEvent.VK_B)) {
-					battle.init();
+					battle.startBattle(p3, p1);
 					gameState = State.BATTLE;
 				}
 
@@ -165,16 +170,13 @@ public class Game extends Canvas implements Runnable {
 					if (e != null) e.startScript();
 					else if (s != null) s.startScript();
 				}
-				
-				// player.tick(delta);
-				// npc.tick(delta);
+				player.tick(delta);
 			}
 			case MESSAGE_BOX -> {
 				if (messageBox.active && !messageBox.stillRendering() && KeyInput.wasPressed(KeyEvent.VK_X) && !yesnoBox.active) {
 					messageBox.continueText();
 				}
-				// player.tick(delta);
-				// npc.tick(delta);
+				player.tick(delta);
 			}
 			case COMMAND -> {
 				for (int i = 'A'; i <= 'Z'; i++) {
@@ -235,6 +237,8 @@ public class Game extends Canvas implements Runnable {
 		} else if (gameState == State.BATTLE) {
 			battle.render(screen);
 		}
+		
+		"a".split(",");
 
 		screen.renderAll();
 		screen.scaleAndSetPixels(pixels);

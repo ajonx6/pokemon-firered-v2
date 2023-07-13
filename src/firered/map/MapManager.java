@@ -1,8 +1,9 @@
 package firered.map;
 
+import firered.entity.Direction;
 import firered.entity.Entity;
-import firered.entity.Player;
 import firered.gfx.Screen;
+import firered.pokemon.Pokemon;
 import firered.scripts.Script;
 import firered.util.Vector;
 
@@ -30,8 +31,8 @@ public class MapManager {
 		return currentMap.entityHasScript(x, y);
 	}
 
-	public static boolean collisionAt(Vector tilePos) {
-		return currentMap.collisionAt(tilePos);
+	public static boolean collisionAt(Vector tilePos, Direction d) {
+		return currentMap.collisionAt(tilePos, d);
 	}
 
 	public static void render(Screen screen) {
@@ -40,5 +41,9 @@ public class MapManager {
 
 	public static void tick(double delta) {
 		currentMap.tick(delta);
+	}
+
+	public static Pokemon checkForWildBattle(Vector tilePos) {
+		return currentMap.generateBattle(tilePos);
 	}
 }

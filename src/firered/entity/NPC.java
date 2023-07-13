@@ -13,7 +13,6 @@ import java.util.*;
 
 public class NPC extends Entity {
 	public static final HashMap<String, NPC> CHARACTERS = new HashMap<>();
-	public static final Player PLAYER = new Player("player", Util.charsToSprites("player", "down", "up", "left", "right"));
 	public static final NPC NPC = new NPC("npc", Util.charsToSprites("npc", "down", "up", "left", "right"));
 
 	public static final double TILE_MOVE_TIME = 0.35;
@@ -67,7 +66,7 @@ public class NPC extends Entity {
 				facing = Direction.RIGHT;
 				sprite = sprites.get("right");
 			}
-			if (MapManager.collisionAt(dest)) return;
+			if (MapManager.collisionAt(dest, facing)) return;
 			currentlyMoving = true;
 			
 			this.dx = dx * Settings.TILE_SIZE / TILE_MOVE_TIME;
@@ -133,7 +132,6 @@ public class NPC extends Entity {
 	public void setFacing(Direction d) {
 		this.facing = d;
 		if (d == Direction.UP) {
-			facing = Direction.UP;
 			sprite = sprites.get("up");
 		}
 		if (d == Direction.DOWN) {

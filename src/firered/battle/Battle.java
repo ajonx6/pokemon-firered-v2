@@ -40,13 +40,13 @@ public class Battle {
 	public static MessageBox messageBox = new MessageBox(MessageBox.BATTLE_UI, MyFont.LIGHT_FONT);
 	public MovePickerUI movePickerUI;
 
-	public Battle(Pokemon playerPokemon, Pokemon opPokemon) {
+	public void startBattle(Pokemon playerPokemon, Pokemon opPokemon) {
 		this.playerPokemon = playerPokemon;
 		this.opPokemon = opPokemon;
-
+		Game.gameState = State.BATTLE;
 		init();
 	}
-
+	
 	public void init() {
 		this.playerHealthUI = new HealthUI(true, playerPokemon);
 		this.opHealthUI = new HealthUI(false, opPokemon);

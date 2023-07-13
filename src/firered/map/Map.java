@@ -2,19 +2,20 @@ package firered.map;
 
 import firered.Game;
 import firered.Settings;
+import firered.entity.Direction;
 import firered.entity.NPC;
 import firered.entity.Entity;
 import firered.entity.MapObject;
 import firered.gfx.Screen;
 import firered.gfx.SpriteList;
 import firered.map.warp.Warp;
+import firered.pokemon.BasePokemon;
+import firered.pokemon.Pokemon;
+import firered.pokemon.moves.Move;
 import firered.scripts.Script;
 import firered.util.Vector;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class Map {
 	public static final Random RANDOM = new Random();
@@ -31,26 +32,29 @@ public class Map {
 	private List<Entity> entities = new ArrayList<>();
 	private HashMap<Integer, NPC> characters = new HashMap<>();
 	private List<MapObject> objects = new ArrayList<>();
+	
+	private WildPokemonRarity wildPokemonRarity;
+	private List<WildPokemonData> wildPokemonData = new ArrayList<>();
 
-	public Map(String name, int id, int width, int height) {
-		this.name = name;
-		this.id = id;
-		this.width = width;
-		this.height = height;
-		this.tiles = new String[width * height];
-		this.specialTiles = new Tile[width * height];
-		this.collisionData = new int[width * height];
-		this.scripts = new Script[width * height];
-
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
-				tiles[x + y * width] = "grass1";
-				// RANDOM.nextInt(TileData.TILES_BY_ID.size());
-			}
-		}
-
-		MAPS_MAP.put(name, this);
-	}
+	// public Map(String name, int id, int width, int height) {
+	// 	this.name = name;
+	// 	this.id = id;
+	// 	this.width = width;
+	// 	this.height = height;
+	// 	this.tiles = new String[width * height];
+	// 	this.specialTiles = new Tile[width * height];
+	// 	this.collisionData = new int[width * height];
+	// 	this.scripts = new Script[width * height];
+	//
+	// 	for (int y = 0; y < height; y++) {
+	// 		for (int x = 0; x < width; x++) {
+	// 			tiles[x + y * width] = "grass1";
+	// 			// RANDOM.nextInt(TileData.TILES_BY_ID.size());
+	// 		}
+	// 	}
+	//
+	// 	MAPS_MAP.put(name, this);
+	// }
 
 	public Map(String name, int id, int width, int height, String[] tiles) {
 		this.name = name;
@@ -87,13 +91,47 @@ public class Map {
 		return null;
 	}
 
-	public boolean collisionAt(Vector tilePos) {
+	public boolean collisionAt(Vector tilePos, Direction dir) {
 		if (tilePos.intX() < 0 || tilePos.intY() < 0 || tilePos.intX() >= width || tilePos.intY() >= height)
 			return true;
+		
 		for (Entity e : entities) {
-			if (Vector.equals(e.getTilePos(), tilePos)) return true;
+			if (Vector.equals(e.getTilePos(), tilePos)) {
+				return true;
+			}
 		}
-		return collisionData[tilePos.intX() + tilePos.intY() * width] == 1;
+		
+		return isAllowedLedge(tilePos, dir) || collisionData[tilePos.intX() + tilePos.intY() * width] == 1;
+	}
+	
+	public boolean isAllowedLedge(Vector tilePos, Direction dir) {
+		for (MapObject e : objects) {
+			if (Vector.equals(e.getTilePos(), tilePos) && e.getObjectData().getName().equals("ledge")) {
+				return dir != Direction.DOWN;
+			}
+		}
+		return false;
+	}
+	
+	/////////////////////////////////////////////////
+	// FIX THIS TO BE BETTER AT GENERATING POKEMON //
+	/////////////////////////////////////////////////
+	public Pokemon generateBattle(Vector tilePos) {
+		for (MapObject e : objects) {
+			if (Vector.equals(e.getTilePos(), tilePos) && e.getObjectData().getName().equals("grass_patch") && RANDOM.nextDouble() < wildPokemonRarity.getScale() / 185.0) {
+				double pokeChance = RANDOM.nextDouble();
+				double currChance = 0;
+				for (WildPokemonData wpd : wildPokemonData) {
+					if (pokeChance < currChance + wpd.probability) {
+						Pokemon p = new Pokemon(wpd.pokemon, RANDOM.nextInt(wpd.maxLevel - wpd.minLevel + 1) + wpd.minLevel, 50, 4, 4, 4);
+						p.addMoves(Move.THUNDER_SHOCK, Move.LICK, Move.RAZOR_LEAF, Move.GROWL);
+						return p;
+					}  
+					currChance += wpd.probability;
+				}
+			}
+		}
+		return null;
 	}
 
 	public void tick(double delta) {
@@ -112,13 +150,15 @@ public class Map {
 	public void render(Screen screen) {
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				screen.prepareRender(x * Settings.TILE_SIZE + MapManager.offsetX, y * Settings.TILE_SIZE + MapManager.offsetY, SpriteList.TILES.get(tiles[x + y * width]), Screen.TILE_LAYER);
+				// screen.prepareRender(x * Settings.TILE_SIZE + MapManager.offsetX, y * Settings.TILE_SIZE + MapManager.offsetY, SpriteList.TILES.get(tiles[x + y * width]), Screen.TILE_LAYER);
+				if (isOnScreen(x * Settings.TILE_SIZE, y * Settings.TILE_SIZE, Settings.TILE_SIZE, Settings.TILE_SIZE))
+					screen.prepareRender(x * Settings.TILE_SIZE + MapManager.offsetX, y * Settings.TILE_SIZE + MapManager.offsetY, SpriteList.TILES.get(tiles[x + y * width]), Screen.TILE_LAYER);
 			}
 		}
 
 		for (MapObject obj : objects) {
-			obj.render(screen);
-			// screen.render(obj.getTilePos().intX() * Settings.TILE_SIZE + MapManager.offsetX,  * Settings.TILE_SIZE + MapManager.offsetY, SpriteList.TILES.get(tiles[x + y * width]));
+			if (isOnScreen(obj.getScreenPos().intX(), obj.getScreenPos().intY(), obj.getObjectData().getTileWidth() * Settings.TILE_SIZE, obj.getObjectData().getTileHeight() * Settings.TILE_SIZE))
+				obj.render(screen);
 		}
 
 		if (Game.debug) {
@@ -134,8 +174,13 @@ public class Map {
 
 		for (Entity e : entities) {
 			if (e == Game.player) continue;
-			e.render(screen);
+			if (isOnScreen(e.getScreenPos().intX(), e.getScreenPos().intY(), e.getSprite().width, e.getSprite().height))
+				e.render(screen);
 		}
+	}
+
+	public boolean isOnScreen(int x, int y, int w, int h) {
+		return x + w >= -MapManager.offsetX && x < -MapManager.offsetX + Game.WIDTH && y + h >= -MapManager.offsetY && y < -MapManager.offsetY + Game.HEIGHT;
 	}
 
 	public void addEntity(Entity e) {
@@ -159,6 +204,11 @@ public class Map {
 		this.scripts[tx + ty * width] = s;
 	}
 
+	public void setWildPokemon(WildPokemonRarity rarity, List<WildPokemonData> data) {
+		this.wildPokemonRarity = rarity;
+		this.wildPokemonData.addAll(data);
+	}
+	
 	public String getName() {
 		return name;
 	}

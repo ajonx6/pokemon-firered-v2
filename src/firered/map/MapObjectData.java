@@ -31,7 +31,11 @@ public class MapObjectData {
         
         MAP_OBJECTS.put(name, this);
     }
-    
+
+    public String getName() {
+        return name;
+    }
+
     public int getTileWidth() {
         return tileWidth;
     }
