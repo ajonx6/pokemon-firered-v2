@@ -55,7 +55,8 @@ public class Game extends Canvas implements Runnable {
 	
 	private Game() {
 		SpriteList.init();
-		BasePokemon.init();
+		Loader.loadMoves();
+		Loader.loadBasePokemon();
 		Loader.loadObjects();
 		Loader.loadMaps();
 		GameVariablesForScripts.init();
@@ -70,11 +71,11 @@ public class Game extends Canvas implements Runnable {
 		yesnoBox = new YesnoBox();
 
 		p1 = new Pokemon(BasePokemon.BASE_POKEMON.get("Pikachu"), 100, Pokemon.USE_BASE_HP, 10, 2, 10);
-		p1.addMoves(Move.THUNDER_SHOCK, Move.GROWL, Move.QUICK_ATTACK, Move.THUNDER_WAVE);
+		p1.addMoves(Move.MOVES.get("thunder-shock"), Move.MOVES.get("growl"), Move.MOVES.get("quick-attack"), Move.MOVES.get("thunder-wave"));
 		p2 = new Pokemon(BasePokemon.BASE_POKEMON.get("Gastly"), 100, Pokemon.USE_BASE_HP, 4, 3, 12);
-		p2.addMoves(Move.HYPNOSIS, Move.LICK, Move.DREAM_EATER, Move.SHADOW_BALL);
+		p2.addMoves(Move.MOVES.get("hypnosis"), Move.MOVES.get("lick"), Move.MOVES.get("dream-eater"), Move.MOVES.get("shadow-ball"));
 		p3 = new Pokemon(BasePokemon.BASE_POKEMON.get("Bulbasaur"), 100, Pokemon.USE_BASE_HP, 5, 5, 10);
-		p3.addMoves(Move.TACKLE, Move.VINE_WHIP, Move.RAZOR_LEAF, Move.GROWTH);
+		p3.addMoves(Move.MOVES.get("tackle"), Move.MOVES.get("vine-whip"), Move.MOVES.get("razor-leaf"), Move.MOVES.get("growth"));
 
 		addKeyListener(new KeyInput());
 	}

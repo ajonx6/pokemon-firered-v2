@@ -38,14 +38,14 @@ public class HealthUI {
         else levelText.setPosition(99 - levelTextWidth, 18);
         
         if (isPlayer) {
-            healthText = new Text(pokemon.hp + "/" + pokemon.base.maxHP, MyFont.BATTLE_UI_FONT);
+            healthText = new Text(pokemon.hp + "/" + pokemon.base.baseStats.hp, MyFont.BATTLE_UI_FONT);
             healthText.setPosition(221 - healthText.getPixelWidth(), 94);
         }
     }
     
     public void tick(double delta) {
         if (healthText != null) {
-            healthText.text = pokemon.hp + "/" + pokemon.base.maxHP;
+            healthText.text = pokemon.hp + "/" + pokemon.base.baseStats.hp;
             healthText.setPosition(221 - healthText.getPixelWidth(), 94);
         }
     }

@@ -60,8 +60,8 @@ public class Battle {
 		playerMove = opponentMove = null;
 		hasMovedThisTurn = false;
 
-		playerPokemon.hp = playerPokemon.base.maxHP;
-		opPokemon.hp = opPokemon.base.maxHP;
+		playerPokemon.hp = playerPokemon.base.baseStats.hp;
+		opPokemon.hp = opPokemon.base.baseStats.hp;
 	}
 
 	public void select() {

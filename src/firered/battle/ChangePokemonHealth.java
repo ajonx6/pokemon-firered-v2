@@ -17,7 +17,7 @@ public class ChangePokemonHealth extends PostMoveChange {
 	public ChangePokemonHealth(Pokemon pokemon, int newHealth) {
 		this.pokemon = pokemon;
 		this.newHealth = newHealth;
-		this.timePerHealth = 1.0 / (pokemon.base.maxHP * D_PERCENT_PER_SECOND);
+		this.timePerHealth = 1.0 / (pokemon.base.baseStats.hp * D_PERCENT_PER_SECOND);
 		this.faint = newHealth == 0;
 	}
 

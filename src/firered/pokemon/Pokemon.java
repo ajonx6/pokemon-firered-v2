@@ -20,14 +20,14 @@ public class Pokemon {
         this.base = base;
         this.nickname = nickname;
         this.level = level;
-        this.hp = hp == USE_BASE_HP ? base.maxHP : hp;
+        this.hp = hp == USE_BASE_HP ? base.baseStats.hp : hp;
         this.attack = attack;
         this.defence = defence;
         this.speed = speed;
     }
     
     public double getHealthPercentage() {
-        return (double) hp / (double) base.maxHP;
+        return (double) hp / (double) base.baseStats.hp;
     }
 
     public void addMoves(Move... moves) {

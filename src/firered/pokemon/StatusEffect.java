@@ -12,4 +12,11 @@ public enum StatusEffect {
 		this.sprite = sprite;
 		this.text = text;
 	}
+
+	public static StatusEffect getTypeByName(String name) {
+		for (StatusEffect t : values()) {
+			if (t.name().equalsIgnoreCase(name)) return t;
+		}
+		return NONE;
+	}
 }

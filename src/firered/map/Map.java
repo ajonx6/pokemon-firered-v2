@@ -124,7 +124,15 @@ public class Map {
 				for (WildPokemonData wpd : wildPokemonData) {
 					if (pokeChance < currChance + wpd.probability) {
 						Pokemon p = new Pokemon(wpd.pokemon, RANDOM.nextInt(wpd.maxLevel - wpd.minLevel + 1) + wpd.minLevel, 50, 4, 4, 4);
-						p.addMoves(Move.THUNDER_SHOCK, Move.LICK, Move.RAZOR_LEAF, Move.GROWL);
+						int level = p.level;
+						int movesAdded = 0;
+						for (int i = p.base.levelMoves.size() - 1; i >= 0; i--) {
+							if (p.base.levelMoves.get(i).level <= level) {
+								p.addMoves(p.base.levelMoves.get(i).move);
+								movesAdded++;
+							}
+							if (movesAdded >= 4) break;
+						}
 						return p;
 					}  
 					currChance += wpd.probability;

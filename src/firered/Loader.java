@@ -10,9 +10,14 @@ import firered.map.WildPokemonData;
 import firered.map.WildPokemonRarity;
 import firered.map.warp.Warp;
 import firered.pokemon.BasePokemon;
+import firered.pokemon.StatType;
+import firered.pokemon.StatusEffect;
+import firered.pokemon.Type;
+import firered.pokemon.moves.*;
 import firered.scripts.Script;
 import firered.util.Util;
 
+import java.io.File;
 import java.util.*;
 
 public class Loader {
@@ -141,7 +146,7 @@ public class Loader {
 			Warp w2 = new Warp(Integer.parseInt(posOut[0]), Integer.parseInt(posOut[1]), Map.MAPS_MAP.get(dest));
 			w1.connect(w2);
 		}
-		
+
 		if (data.get(currentDataIndex).startsWith("wild ")) {
 			String line = data.get(currentDataIndex++);
 			String[] tokens = line.split(" ");
@@ -153,6 +158,100 @@ public class Loader {
 				wpd.add(new WildPokemonData(BasePokemon.BASE_POKEMON.get(ds[0]), Integer.parseInt(ds[1]), Integer.parseInt(ds[2]), Double.parseDouble(ds[3])));
 			}
 			map.setWildPokemon(wpr, wpd);
+		}
+	}
+
+	public static void loadMoves() {
+		File parent = new File("res/moves/");
+		File[] files = parent.listFiles();
+		for (File f : files) {
+			String fileName = f.getName();
+			List<String> data = Util.load("moves/" + fileName);
+
+			String id = data.get(0);
+			String name = data.get(1);
+			Type type = Type.getTypeByName(data.get(2));
+			int pp = Integer.parseInt(data.get(3));
+			Move move = new Move(id, name, type, pp);
+
+			for (int i = 4; i < data.size(); i++) {
+				String[] tokens = data.get(i).split(" ");
+				if (tokens[0].equals("damage")) {
+					if (tokens.length == 3) {
+						move.addModifier(new DamageOnlyWithStatus(Integer.parseInt(tokens[1]), StatusEffect.getTypeByName(tokens[2])));
+					} else {
+						move.addModifier(new NormalDamage(Integer.parseInt(tokens[1])));
+					}
+				} else if (tokens[0].equals("accuracy")) {
+					if (tokens.length == 2) {
+						move.addModifier(new AccuracyModifier(Double.parseDouble(tokens[1])));
+					} else {
+						move.addModifier(new AccuracyModifier());
+					}
+				} else if (tokens[0].equals("restore")) {
+					move.addModifier(new RestoreHealth(Double.parseDouble(tokens[1]), Boolean.parseBoolean(tokens[2])));
+				} else if (tokens[0].equals("stat")) {
+					if (tokens.length == 4) {
+						move.addModifier(new StatValueModifier(StatType.getTypeByName(tokens[1]), Integer.parseInt(tokens[2]), Double.parseDouble(tokens[3])));
+					} else {
+						move.addModifier(new StatValueModifier(StatType.getTypeByName(tokens[1]), Integer.parseInt(tokens[2])));
+					}
+				} else if (tokens[0].equals("selfstat")) {
+					move.addModifier(new SelfStatValueModifier(StatType.getTypeByName(tokens[1]), Integer.parseInt(tokens[2])));
+				} else if (tokens[0].equals("status")) {
+					if (tokens.length == 3) {
+						move.addModifier(new StatusModifier(StatusEffect.getTypeByName(tokens[1]), Double.parseDouble(tokens[2])));
+					} else {
+						move.addModifier(new StatusModifier(StatusEffect.getTypeByName(tokens[1])));
+					}
+				} else if (tokens[0].equals("selfstatus")) {
+					move.addModifier(new SelfStatusModifier(StatusEffect.getTypeByName(tokens[1])));
+				} else if (tokens[0].equals("priority")) {
+					move.addModifier(new PriorityMove(Integer.parseInt(tokens[1])));
+				}
+			}
+		}
+	}
+
+	public static void loadBasePokemon() {
+		File parent = new File("res/pokemon/");
+		File[] folders = parent.listFiles();
+		for (File f : folders) {
+			if (f.isDirectory()) {
+				String fileName = f.getName();
+				List<String> data = Util.load("pokemon/" + fileName + "/pokedata.pd");
+
+				String name = data.get(0);
+				int pokedexNumber = Integer.parseInt(data.get(1));
+				Type type1 = Type.getTypeByName(data.get(2));
+				Type type2 = Type.getTypeByName(data.get(3));
+				String ability = data.get(4);
+				int height = Integer.parseInt(data.get(10));
+				int weight = Integer.parseInt(data.get(11));
+				BasePokemon basePokemon = BasePokemon.addPokemon(name, pokedexNumber, type1, type2, ability, height, weight);
+
+				basePokemon.setSprites(new Sprite("pokemon/" + fileName + "/front_normal"), new Sprite("pokemon/" + fileName + "/back_normal"), new Sprite("pokemon/" + fileName + "/front_shiny"), new Sprite("pokemon/" + fileName + "/back_shiny"));
+
+				String[] levelMoves = data.get(5).split(" ");
+				for (int i = 0; i < levelMoves.length; i += 2) {
+					Move m = Move.MOVES.get(levelMoves[i + 1]);
+					if (m == null) continue;
+					basePokemon.addLevelMove(m, Integer.parseInt(levelMoves[i]));
+				}
+				String[] machineMoves = data.get(6).split(" ");
+				for (String move : machineMoves) {
+					Move m = Move.MOVES.get(move);
+					if (m == null) continue;
+					basePokemon.addMachineMove(m);
+				}
+
+				int baseExp = Integer.parseInt(data.get(7));
+				String[] bases = data.get(8).split(" ");
+				basePokemon.setBaseStats(Integer.parseInt(bases[0]), Integer.parseInt(bases[1]), Integer.parseInt(bases[2]), Integer.parseInt(bases[3]), Integer.parseInt(bases[4]), Integer.parseInt(bases[5]), baseExp);
+
+				String[] evs = data.get(9).split(" ");
+				basePokemon.setEVStats(Integer.parseInt(evs[0]), Integer.parseInt(evs[1]), Integer.parseInt(evs[2]), Integer.parseInt(evs[3]), Integer.parseInt(evs[4]), Integer.parseInt(evs[5]));
+			}
 		}
 	}
 }

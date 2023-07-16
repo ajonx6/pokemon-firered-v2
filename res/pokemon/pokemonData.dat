@@ -1,0 +1,11 @@
+[Bulbasaur]
+type1=GRASS
+type2=POISON
+basestats=45,49,49,45,65,65
+levelmoves=1,Tackle,4,Growl,7,Leech Seed,10,Vine Whip,15,Poison Powder,15,Sleep Powder,20,Razor Leaf,25,Sweet Scent,32,Growth,39,Synthesis,46,Solar Beam
+
+[Charmander]
+type1=FIRE
+type2=NULL
+basestats=39,52,43,60,50,65
+levelmoves=1,Scratch,1,Growl,7,Ember,13,Metal Claw,19,Smoke Screen,25,Scary Face,31,Flamethrower,37,Slash,43,Dragon Rage,49,Fire Spin
