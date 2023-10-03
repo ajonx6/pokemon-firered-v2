@@ -19,6 +19,8 @@ end
 print Ah, well it's good to see you again!
 move 1 d r d l u u
 face 1 d
+move 0 r d l u
+face 0 l
 end
 
 @func2

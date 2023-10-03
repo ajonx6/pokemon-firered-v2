@@ -2,6 +2,7 @@ package firered.entity;
 
 import firered.Game;
 import firered.Settings;
+import firered.State;
 import firered.gfx.Screen;
 import firered.gfx.sprites.Sprite;
 import firered.map.MapManager;
@@ -51,7 +52,7 @@ public class Player extends firered.entity.NPC {
 	public void tick(double delta) {
 		super.tick(delta);
 		Script scriptUnder = MapManager.scriptUnder(this);
-		if (scriptUnder != null && !currentlyMoving && hasMoved) {
+		if (Game.gameState == State.NORMAL && scriptUnder != null && !currentlyMoving && hasMoved) {
 			scriptUnder.startScript();
 			hasMoved = false;
 		}

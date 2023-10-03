@@ -1,0 +1,9 @@
+blaze-kick
+Blaze Kick
+fire
+physical
+10
+damage 85
+accuracy 0.9
+inccrithit
+status burn 0.1

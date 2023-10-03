@@ -1,4 +1,4 @@
-package firered.pokemon.moves;
+package firered.pokemon.moves.modifiers;
 
 public abstract class MoveModifier {
 	public String name;

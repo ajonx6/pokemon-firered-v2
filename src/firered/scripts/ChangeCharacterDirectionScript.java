@@ -29,8 +29,8 @@ public class ChangeCharacterDirectionScript {
 		}
 	}
 
-	public static void face(int charID, String dir) {
-		NPC c = MapManager.currentMap.getCharacterByID(charID);
+	public static void face(int characterID, String dir) {
+		NPC c = characterID > 0 ? MapManager.currentMap.getCharacterByID(characterID) : Game.player;
 		c.setFacing(Direction.getByInitial(dir));
 	}
 }

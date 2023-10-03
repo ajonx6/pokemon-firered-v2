@@ -4,6 +4,7 @@ import firered.battle.Battle;
 import firered.entity.Player;
 import firered.gfx.Screen;
 import firered.gfx.SpriteList;
+import firered.gfx.Transition;
 import firered.map.Map;
 import firered.map.MapManager;
 import firered.pokemon.BasePokemon;
@@ -63,8 +64,8 @@ public class Game extends Canvas implements Runnable {
 
 		screen = new Screen(WIDTH, HEIGHT);
 
-		MapManager.loadMap(Map.MAPS_MAP.get("route1"));
-		// MapManager.loadMap(Map.MAPS_MAP.get("pallet_town"));
+		// MapManager.loadMap(Map.MAPS_MAP.get("route1"));
+		MapManager.loadMap(Map.MAPS_MAP.get("pallet_town"));
 		player = new Player(0, 4, 4, Util.charsToSprites("player", "down", "up", "left", "right"));
 
 		messageBox = new MessageBox(MessageBox.UI1, MyFont.DARK_FONT);
@@ -152,9 +153,7 @@ public class Game extends Canvas implements Runnable {
 					gameState = State.COMMAND;
 					break;
 				}
-
-				// if (KeyInput.wasPressed(KeyEvent.VK_1)) script.startScript();
-
+				
 				if (KeyInput.wasPressed(KeyEvent.VK_B)) {
 					battle.startBattle(p3, p1);
 					gameState = State.BATTLE;
@@ -215,6 +214,7 @@ public class Game extends Canvas implements Runnable {
 			}
 		}
 
+		Transition.tick(delta);
 		messageBox.tick(delta);
 		yesnoBox.tick(delta);
 		MapManager.tick(delta);
@@ -238,10 +238,9 @@ public class Game extends Canvas implements Runnable {
 		} else if (gameState == State.BATTLE) {
 			battle.render(screen);
 		}
-		
-		"a".split(",");
 
 		screen.renderAll();
+		Transition.render(screen);
 		screen.scaleAndSetPixels(pixels);
 
 		g.drawImage(image, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, null);

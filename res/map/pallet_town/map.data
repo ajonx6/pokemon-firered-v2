@@ -37,4 +37,5 @@ script object rival_house_sign 13,7
 script char npc_script 1 
 script tile tile_script 3,3
 warp 6,7 pallet_town 15,7
+map U route1
 end

@@ -16,8 +16,8 @@ public class Screen {
 	
 	public static double xOffset, yOffset;
 
-	private int width, height;
-	private int[] pixels;
+	public int width, height;
+	public int[] pixels;
 	
 	// Layer 0 = tiles 
 	// Layer 1 = objects below player or collision objects

@@ -14,6 +14,7 @@ import firered.pokemon.StatType;
 import firered.pokemon.StatusEffect;
 import firered.pokemon.Type;
 import firered.pokemon.moves.*;
+import firered.pokemon.moves.modifiers.*;
 import firered.scripts.Script;
 import firered.util.Util;
 
@@ -28,6 +29,8 @@ public class Loader {
 		List<String> data = Util.load(pathToMapData);
 		int currentDataIndex = 0;
 
+		// Create object data for each object in the file
+		// Currently, number per tile is the render layer
 		while (currentDataIndex < data.size()) {
 			String[] objDetails = data.get(currentDataIndex++).split(",");
 			String name = objDetails[0];
@@ -49,8 +52,11 @@ public class Loader {
 		String pathToMapData = "map/map.data";
 		List<String> mapNames = Util.load(pathToMapData);
 		for (String name : mapNames) {
+			System.out.print("Loading map " + name + "...");
 			loadMap(name);
+			System.out.println(" Done!");
 		}
+		System.out.println("================ Finished Loading Maps =================\n");
 	}
 
 	private static void loadMap(String name) {
@@ -59,10 +65,13 @@ public class Loader {
 
 		int id = Integer.parseInt(data.get(currentDataIndex++));
 
+		// Loads the map dimensions
 		String[] mapDims = data.get(currentDataIndex++).split(",");
 		int width = Integer.parseInt(mapDims[0]);
 		int height = Integer.parseInt(mapDims[1]);
 
+		// Loads the mapping between ids and tile types
+		// Each id can have multiple tile types to pick between 
 		HashMap<Integer, List<String>> tileIDs = new HashMap<>();
 		while (data.get(currentDataIndex).startsWith("td ")) {
 			String line = data.get(currentDataIndex++);
@@ -72,6 +81,7 @@ public class Loader {
 			tileIDs.put(Integer.parseInt(line.split(" ")[1].split("=")[0]), ids);
 		}
 
+		// Loads the tiles for the map e.g. grass, water, path etc
 		String[] tileData = new String[width * height];
 		for (int y = 0; y < height; y++) {
 			String line = data.get(currentDataIndex++);
@@ -83,12 +93,17 @@ public class Loader {
 			}
 		}
 
+		// Creates the map
 		Map map = new Map(name, id, width, height, tileData);
 
+		// Adds world objects to the scene e.g. trees, ledges, flowers, buildings etc
 		while (data.get(currentDataIndex).startsWith("obj ")) {
 			String line = data.get(currentDataIndex++);
 			String[] tokens = line.split(" ");
 			if (tokens[1].equals("#")) continue;
+			// Each line is pos1/pos2/pos3/pos4, where posn is
+			// - x,y the co-ordinate of the tile for the top left corner
+			// - lx,y,dx,dy,nx,ny, loops nx and ny times from x,y, adding dx,dy each time (makes a rectangle)
 			String[] positions = tokens[2].split("/");
 			for (String pos : positions) {
 				if (pos.startsWith("l")) {
@@ -108,6 +123,8 @@ public class Loader {
 			}
 		}
 
+		// Adds npcs to the map
+		// Has the npc type, its id and the tile co-ordinate for it
 		while (data.get(currentDataIndex).startsWith("char ")) {
 			String line = data.get(currentDataIndex++);
 			String[] tokens = line.split(" ");
@@ -121,6 +138,10 @@ public class Loader {
 			map.addEntity(c);
 		}
 
+		// Adds scripts to the map or to npcs in the map
+		// object and tile both place the script in the world, but object is used on object tiles the player cannot
+		// walk on, whereas tile is a walkable tile (purely syntax for the user, no difference in code)
+		// char attaches a script to the npc with the given id to interact with
 		while (data.get(currentDataIndex).startsWith("script ")) {
 			String line = data.get(currentDataIndex++);
 			String[] tokens = line.split(" ");
@@ -135,6 +156,8 @@ public class Loader {
 			}
 		}
 
+		// Adds warps
+		// Needs x,y co-ord of warp1, the map of warp2, and the x,y co-ord of warp2 in map2 
 		while (data.get(currentDataIndex).startsWith("warp ")) {
 			String line = data.get(currentDataIndex++);
 			String[] tokens = line.split(" ");
@@ -147,6 +170,9 @@ public class Loader {
 			w1.connect(w2);
 		}
 
+		// Adds wild pokemon data
+		// Needs the wild pokemon rate (vc/r/... etc) and then a list of pokemon with the syntax
+		// - name1,minlevel1,maxlevel1,probability1 / name2,...
 		if (data.get(currentDataIndex).startsWith("wild ")) {
 			String line = data.get(currentDataIndex++);
 			String[] tokens = line.split(" ");
@@ -159,28 +185,49 @@ public class Loader {
 			}
 			map.setWildPokemon(wpr, wpd);
 		}
+		
+		if (data.get(currentDataIndex).startsWith("map ")) {
+			String line = data.get(currentDataIndex++);
+			String[] tokens = line.split(" ");
+			if (tokens[1].equals("U")) {
+				System.out.println("UP");
+				map.setMapDirection(Map.UP, tokens[2]);
+			} else if (tokens[1].equals("D")) {
+				System.out.println("DOWN");
+				map.setMapDirection(Map.DOWN, tokens[2]);
+			} else if (tokens[1].equals("L")) {
+				System.out.println("LEFT");
+				map.setMapDirection(Map.LEFT, tokens[2]);
+			} else if (tokens[1].equals("R")) {
+				System.out.println("RIGHT");
+				map.setMapDirection(Map.RIGHT, tokens[2]);
+			}
+		}
 	}
 
 	public static void loadMoves() {
 		File parent = new File("res/moves/");
 		File[] files = parent.listFiles();
-		for (File f : files) {
+		outerloop: for (File f : files) {
 			String fileName = f.getName();
 			List<String> data = Util.load("moves/" + fileName);
+
+			System.out.print("Loading move " + fileName.replace(".mv", "") + "...");
 
 			String id = data.get(0);
 			String name = data.get(1);
 			Type type = Type.getTypeByName(data.get(2));
-			int pp = Integer.parseInt(data.get(3));
-			Move move = new Move(id, name, type, pp);
+			MoveType mt = MoveType.getMoveTypeByName(data.get(3));
+			int pp = Integer.parseInt(data.get(4));
+			Move move = new Move(id, name, type, mt, pp);
 
-			for (int i = 4; i < data.size(); i++) {
+			for (int i = 5; i < data.size(); i++) {
 				String[] tokens = data.get(i).split(" ");
 				if (tokens[0].equals("damage")) {
 					if (tokens.length == 3) {
-						move.addModifier(new DamageOnlyWithStatus(Integer.parseInt(tokens[1]), StatusEffect.getTypeByName(tokens[2])));
+						move.addModifier(new DamageOnlyWithStatusModifier(Integer.parseInt(tokens[1]), StatusEffect.getTypeByName(tokens[2])));
 					} else {
-						move.addModifier(new NormalDamage(Integer.parseInt(tokens[1])));
+						move.addModifier(new NormalDamageModifier(Integer.parseInt(tokens[1])));
 					}
 				} else if (tokens[0].equals("accuracy")) {
 					if (tokens.length == 2) {
@@ -188,8 +235,14 @@ public class Loader {
 					} else {
 						move.addModifier(new AccuracyModifier());
 					}
+				} else if (tokens[0].equals("flinch")) {
+					if (tokens.length == 2) {
+						move.addModifier(new FlinchModifier(Double.parseDouble(tokens[1])));
+					} else {
+						move.addModifier(new FlinchModifier());
+					}
 				} else if (tokens[0].equals("restore")) {
-					move.addModifier(new RestoreHealth(Double.parseDouble(tokens[1]), Boolean.parseBoolean(tokens[2])));
+					move.addModifier(new RestoreHealthModifier(Double.parseDouble(tokens[1]), Boolean.parseBoolean(tokens[2])));
 				} else if (tokens[0].equals("stat")) {
 					if (tokens.length == 4) {
 						move.addModifier(new StatValueModifier(StatType.getTypeByName(tokens[1]), Integer.parseInt(tokens[2]), Double.parseDouble(tokens[3])));
@@ -207,10 +260,21 @@ public class Loader {
 				} else if (tokens[0].equals("selfstatus")) {
 					move.addModifier(new SelfStatusModifier(StatusEffect.getTypeByName(tokens[1])));
 				} else if (tokens[0].equals("priority")) {
-					move.addModifier(new PriorityMove(Integer.parseInt(tokens[1])));
+					move.addModifier(new PriorityMoveModifier(Integer.parseInt(tokens[1])));
+				} else if (tokens[0].equalsIgnoreCase("inccrithit")) {
+					move.addModifier(new HighCriticalHitRatioModifier());
+				} else if (tokens[0].equalsIgnoreCase("recharge-next-turn")) {
+					move.addModifier(new RechargeNextTurnModifier());
+				} else if (tokens[0].equalsIgnoreCase("multihit")) {
+					move.addModifier(new MultiHitModifier());
+				} else {
+					System.out.println(" Error loading modifier for " + name + ": " + data.get(i));
+					continue outerloop; 
 				}
 			}
+			System.out.println(" Done!");
 		}
+		System.out.println("================ Finished Loading Moves ================\n");
 	}
 
 	public static void loadBasePokemon() {
@@ -220,6 +284,8 @@ public class Loader {
 			if (f.isDirectory()) {
 				String fileName = f.getName();
 				List<String> data = Util.load("pokemon/" + fileName + "/pokedata.pd");
+
+				System.out.print("Loading pokemon " + fileName + "...");
 
 				String name = data.get(0);
 				int pokedexNumber = Integer.parseInt(data.get(1));
@@ -251,7 +317,10 @@ public class Loader {
 
 				String[] evs = data.get(9).split(" ");
 				basePokemon.setEVStats(Integer.parseInt(evs[0]), Integer.parseInt(evs[1]), Integer.parseInt(evs[2]), Integer.parseInt(evs[3]), Integer.parseInt(evs[4]), Integer.parseInt(evs[5]));
+				
+				System.out.println(" Done!");
 			}
 		}
+		System.out.println("=============== Finished Loading Pokemon ===============\n");
 	}
 }

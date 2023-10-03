@@ -18,6 +18,8 @@ import firered.util.Vector;
 import java.util.*;
 
 public class Map {
+	public static final int UP = 0, DOWN = 1, LEFT = 2, RIGHT = 3;
+	
 	public static final Random RANDOM = new Random();
 	public static final HashMap<String, Map> MAPS_MAP = new HashMap<>();
 
@@ -32,29 +34,10 @@ public class Map {
 	private List<Entity> entities = new ArrayList<>();
 	private HashMap<Integer, NPC> characters = new HashMap<>();
 	private List<MapObject> objects = new ArrayList<>();
+	private String[] mapInEachDirection = new String[4];
 	
 	private WildPokemonRarity wildPokemonRarity;
 	private List<WildPokemonData> wildPokemonData = new ArrayList<>();
-
-	// public Map(String name, int id, int width, int height) {
-	// 	this.name = name;
-	// 	this.id = id;
-	// 	this.width = width;
-	// 	this.height = height;
-	// 	this.tiles = new String[width * height];
-	// 	this.specialTiles = new Tile[width * height];
-	// 	this.collisionData = new int[width * height];
-	// 	this.scripts = new Script[width * height];
-	//
-	// 	for (int y = 0; y < height; y++) {
-	// 		for (int x = 0; x < width; x++) {
-	// 			tiles[x + y * width] = "grass1";
-	// 			// RANDOM.nextInt(TileData.TILES_BY_ID.size());
-	// 		}
-	// 	}
-	//
-	// 	MAPS_MAP.put(name, this);
-	// }
 
 	public Map(String name, int id, int width, int height, String[] tiles) {
 		this.name = name;
@@ -155,36 +138,46 @@ public class Map {
 		}
 	}
 
-	public void render(Screen screen) {
+	public void render(Screen screen, int xoffset, int yoffset) {
 		for (int y = 0; y < height; y++) {
+			int py = y + yoffset;
 			for (int x = 0; x < width; x++) {
-				// screen.prepareRender(x * Settings.TILE_SIZE + MapManager.offsetX, y * Settings.TILE_SIZE + MapManager.offsetY, SpriteList.TILES.get(tiles[x + y * width]), Screen.TILE_LAYER);
-				if (isOnScreen(x * Settings.TILE_SIZE, y * Settings.TILE_SIZE, Settings.TILE_SIZE, Settings.TILE_SIZE))
-					screen.prepareRender(x * Settings.TILE_SIZE + MapManager.offsetX, y * Settings.TILE_SIZE + MapManager.offsetY, SpriteList.TILES.get(tiles[x + y * width]), Screen.TILE_LAYER);
+				int px = x + xoffset;
+				if (isOnScreen(px * Settings.TILE_SIZE, py * Settings.TILE_SIZE, Settings.TILE_SIZE, Settings.TILE_SIZE))
+					screen.prepareRender(px * Settings.TILE_SIZE + MapManager.offsetX, py * Settings.TILE_SIZE + MapManager.offsetY, SpriteList.TILES.get(tiles[x + y * width]), Screen.TILE_LAYER);
 			}
 		}
 
 		for (MapObject obj : objects) {
-			if (isOnScreen(obj.getScreenPos().intX(), obj.getScreenPos().intY(), obj.getObjectData().getTileWidth() * Settings.TILE_SIZE, obj.getObjectData().getTileHeight() * Settings.TILE_SIZE))
+			Vector offsetPos = Vector.add(obj.getScreenPos(), xoffset, yoffset);
+			if (isOnScreen(offsetPos.intX(), offsetPos.intY(), obj.getObjectData().getTileWidth() * Settings.TILE_SIZE, obj.getObjectData().getTileHeight() * Settings.TILE_SIZE))
 				obj.render(screen);
 		}
 
 		if (Game.debug) {
 			for (int y = 0; y < height; y++) {
+				int py = y + yoffset;
 				for (int x = 0; x < width; x++) {
+					int px = x + xoffset;
 					Tile t = specialTiles[x + y * width];
 					if (t == null) continue;
 					if (t instanceof Warp)
-						screen.prepareRender(x * Settings.TILE_SIZE + MapManager.offsetX, y * Settings.TILE_SIZE + MapManager.offsetY, SpriteList.WARP_SPRITE, Screen.UI_ELEMENTS);
+						screen.prepareRender(px * Settings.TILE_SIZE + MapManager.offsetX, py * Settings.TILE_SIZE + MapManager.offsetY, SpriteList.WARP_SPRITE, Screen.UI_ELEMENTS);
 				}
 			}
 		}
 
 		for (Entity e : entities) {
 			if (e == Game.player) continue;
-			if (isOnScreen(e.getScreenPos().intX(), e.getScreenPos().intY(), e.getSprite().width, e.getSprite().height))
+			Vector offsetPos = Vector.add(e.getScreenPos(), xoffset, yoffset);
+			if (isOnScreen(offsetPos.intX(), offsetPos.intY(), e.getSprite().width, e.getSprite().height))
 				e.render(screen);
 		}
+		
+		// if (Map.MAPS_MAP.get(mapInEachDirection[UP]) != null) {
+		// 	Map m = Map.MAPS_MAP.get(mapInEachDirection[UP]);
+		// 	m.render(screen, 0, -m.height);
+		// }
 	}
 
 	public boolean isOnScreen(int x, int y, int w, int h) {
@@ -211,7 +204,11 @@ public class Map {
 	public void addScript(Script s, int tx, int ty) {
 		this.scripts[tx + ty * width] = s;
 	}
-
+	
+	public void setMapDirection(int direction, String mapName) {
+		mapInEachDirection[direction] = mapName;
+	}
+	
 	public void setWildPokemon(WildPokemonRarity rarity, List<WildPokemonData> data) {
 		this.wildPokemonRarity = rarity;
 		this.wildPokemonData.addAll(data);

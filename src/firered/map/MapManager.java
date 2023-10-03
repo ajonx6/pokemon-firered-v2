@@ -36,7 +36,7 @@ public class MapManager {
 	}
 
 	public static void render(Screen screen) {
-		currentMap.render(screen);
+		currentMap.render(screen, 0, 0);
 	}
 
 	public static void tick(double delta) {

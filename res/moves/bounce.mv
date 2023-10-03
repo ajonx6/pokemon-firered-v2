@@ -1,0 +1,9 @@
+bounce
+Bounce
+flying
+physical
+5
+damage 85
+accuracy 0.85
+status paralysis 0.3
+TO BE IMPLEMENTED - fly-like move

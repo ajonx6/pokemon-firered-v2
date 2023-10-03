@@ -1,6 +1,7 @@
-package firered.pokemon.moves;
+package firered.pokemon.moves.modifiers;
 
 import firered.pokemon.StatType;
+import firered.pokemon.moves.modifiers.MoveModifier;
 
 public class StatValueModifier extends MoveModifier {
 	public StatType type;
